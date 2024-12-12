@@ -5,14 +5,13 @@ import SyncWithStravaButton from "./sync-with-strava-button"
 import { Button } from "./ui/button"
 import { useRouter } from "next/navigation"
 import TimesEditor from "./times-editor"
-import useTimeUpsert from "@/hooks/useTimeUpsert"
 
 const TimesUI = () => {
   const router = useRouter()
   const [enterManually, setEnterManually] = useState(false)
 
   const handleStravaSyncSuccess = () => {
-    router.push(`/protected`)
+    router.push(`/p/me`)
   }
 
   return <div className="max-w-5xl w-full">

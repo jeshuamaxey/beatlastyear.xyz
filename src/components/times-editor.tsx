@@ -9,6 +9,7 @@ import useTimeUpsert from '@/hooks/useTimeUpsert';
 import TimeInput from './time-input';
 import Link from 'next/link';
 import useTimesQuery from '@/hooks/useTimesQuery';
+import { createClient } from '@/utils/supabase/client';
 
 const TimeRow = ({time}: { time: Database["public"]["Tables"]["times"]["Row"]}) => {
   const [newYear, setNewYear] = useState<number>(time.year)
@@ -48,6 +49,8 @@ const TimeRow = ({time}: { time: Database["public"]["Tables"]["times"]["Row"]}) 
 }
 
 const TimesEditor = () => {
+  const supabase = createClient()
+
   const timeInputRef = useRef<HTMLInputElement | null>(null)
   const [newTimeSeconds, setNewTimeSeconds] = useState<number>(0)
 
@@ -122,7 +125,7 @@ const TimesEditor = () => {
 
     </form>
 
-    <Link href="/protected">see chart</Link>
+    <Link href={`/p/me`}>see chart</Link>
     
     {/* </CardContent> */}
   </div>

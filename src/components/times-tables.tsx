@@ -7,7 +7,6 @@ import React from 'react';
 
 import { LineLinearGradientChart } from "./charts/line-linear-gradient";
 import { Card } from "./ui/card";
-import RunningTimesChart from "./charts/running-times-chart";
 
 const TimesTable = () => {
   const supabase = createClient()
@@ -27,10 +26,6 @@ const TimesTable = () => {
   const times = timesQuery.data!.data!
 
   return <div>
-    <h3>times</h3>
-
-    {/* <pre>{JSON.stringify(times, null, 2)}</pre> */}
-
     {times.map(({id, year, time, data_source}) => {
       const ss = time % 60
       const mm = (time - ss)/60
