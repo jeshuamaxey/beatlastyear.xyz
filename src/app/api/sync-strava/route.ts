@@ -1,18 +1,18 @@
 // api/sync-strava.ts
-import { NextApiRequest, NextApiResponse } from "next";
 import { StravaAPI } from "@/lib/strava";
 import { createClient } from "@/utils/supabase/server";
 import { Database } from "@/utils/supabase/autogen.types";
 import { NextResponse } from "next/server";
 
 export async function POST(
-  req: NextApiRequest,
-  res: NextApiResponse,
+  req: Request
 ) {
   console.log("req.method :: ", req.method)
   
   if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method not allowed" });
+    return NextResponse.json({ message: "Method not allowed" }, {
+      status: 405
+    })
   }
 
   const supabase = await createClient()

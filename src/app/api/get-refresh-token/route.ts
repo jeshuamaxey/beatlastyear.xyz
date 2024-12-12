@@ -1,19 +1,17 @@
 // api/get-refresh-token.ts
-import { NextApiRequest, NextApiResponse } from 'next';
+import { redirect } from 'next/navigation';
 import { NextResponse } from "next/server";
 
-export default async function GET(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  const { code } = req.query;
+export async function GET(req: Request) {
+  const requestUrl = new URL(req.url);
+  const code = requestUrl.searchParams.get("code");
 
   if (!code) {
+    const host = req.headers.get('host')
     const clientId = process.env.STRAVA_CLIENT_ID;
-    const redirectUri = `https://${req.headers.host}/api/get-refresh-token`;
+    const redirectUri = `https://${host}/api/get-refresh-token`;
     const authUrl = `https://www.strava.com/oauth/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=activity:read_all`;
-    res.redirect(authUrl);
-    return;
+    return redirect(authUrl);
   }
 
   try {
