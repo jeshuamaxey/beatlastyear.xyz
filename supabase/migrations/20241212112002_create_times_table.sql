@@ -1,10 +1,15 @@
 create table public.times (
   id serial primary key,
   profile_id uuid not null references public.profiles(id) on delete cascade,
-  time integer not null,
+  time numeric(8, 2) not null,
   distance text check (distance in ('100m', '200m', '400m', '800m', '1500m', '5km', '1k0m', 'half-marathon', 'marathon')),
   sport text check (sport in ('running')),
-  year integer not null
+  year integer not null,
+
+  date date,
+  strava_activity_id text,
+
+  unique (profile_id, year, distance, sport)
 );
 
 alter table public.times enable row level security;
