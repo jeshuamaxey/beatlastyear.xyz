@@ -1,7 +1,8 @@
 // api/get-refresh-token.ts
 import { NextApiRequest, NextApiResponse } from 'next';
+import { NextResponse } from "next/server";
 
-export default async function handler(
+export default async function GET(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
@@ -28,8 +29,13 @@ export default async function handler(
     });
 
     const data = await tokenResponse.json();
-    res.status(200).json({ refresh_token: data.refresh_token });
+    return NextResponse.json({ refresh_token: data.refresh_token }, {
+      status: 200
+    })
+    
   } catch (error) {
-    res.status(500).json({ error: 'Failed to get refresh token' });
+    return NextResponse.json({ error: 'Failed to get refresh token' }, {
+      status: 500
+    })
   }
 }
