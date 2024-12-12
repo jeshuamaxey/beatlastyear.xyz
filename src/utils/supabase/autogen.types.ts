@@ -54,26 +54,35 @@ export type Database = {
       }
       times: {
         Row: {
+          data_source: string | null
+          date: string | null
           distance: string | null
           id: number
           profile_id: string
           sport: string | null
+          strava_activity_id: string | null
           time: number
           year: number
         }
         Insert: {
+          data_source?: string | null
+          date?: string | null
           distance?: string | null
           id?: number
           profile_id: string
           sport?: string | null
+          strava_activity_id?: string | null
           time: number
           year: number
         }
         Update: {
+          data_source?: string | null
+          date?: string | null
           distance?: string | null
           id?: number
           profile_id?: string
           sport?: string | null
+          strava_activity_id?: string | null
           time?: number
           year?: number
         }

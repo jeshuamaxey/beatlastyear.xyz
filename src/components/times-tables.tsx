@@ -31,8 +31,8 @@ const TimesTable = () => {
 
     {/* <pre>{JSON.stringify(times, null, 2)}</pre> */}
 
-    {times.map(({id, year, time}) => <p key={id}>
-      {year}: {time} seconds
+    {times.map(({id, year, time, data_source}) => <p key={id}>
+      {year}: {time} seconds ({data_source})
     </p>)}
 
     {/* <RunningTimesChart data={times} /> */}

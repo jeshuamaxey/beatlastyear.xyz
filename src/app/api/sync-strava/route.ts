@@ -50,7 +50,8 @@ export async function POST(
       distance: "5km",
       sport: "running",
       date: run.date,
-      activity_id: run.activity_id,
+      strava_activity_id: run.activity_id,
+      data_source: "strava"
     }))
 
     const { error } = await supabase.from("times").upsert(

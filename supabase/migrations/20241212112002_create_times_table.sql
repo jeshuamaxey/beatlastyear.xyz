@@ -6,6 +6,7 @@ create table public.times (
   sport text check (sport in ('running')),
   year integer not null,
 
+  data_source text check (data_source in ('manual', 'strava')),
   date date,
   strava_activity_id text,
 
