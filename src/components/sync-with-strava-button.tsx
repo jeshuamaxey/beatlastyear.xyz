@@ -2,8 +2,14 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "./ui/button"
+import { cn } from "@/lib/utils"
 
-const SyncWithStravaButton = () => {
+type SyncWithStravaButtonProps = {
+  className?: string
+  onSuccess?: () => void
+}
+
+const SyncWithStravaButton = ({className, onSuccess}: SyncWithStravaButtonProps) => {
   const queryClient = useQueryClient()
 
   const stravaMutation = useMutation({
@@ -11,13 +17,14 @@ const SyncWithStravaButton = () => {
     mutationFn: async () => await fetch("/api/sync-strava", { method: "POST" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["times"]})
+      onSuccess && onSuccess();
     }
   })
 
   return <Button
     onClick={() => stravaMutation.mutate()}
     disabled={stravaMutation.isPending}
-    className="mb-4"
+    className={cn([className, "mb-4"])}
   >
     {stravaMutation.isPending ? "Syncing..." : "Sync with Strava"}
   </Button>
