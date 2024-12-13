@@ -1,8 +1,9 @@
-// api/sync-strava.ts
+// api/strava/sync
 import { StravaAPI } from "@/lib/strava";
 import { createClient } from "@/utils/supabase/server";
 import { Database } from "@/utils/supabase/autogen.types";
 import { NextResponse } from "next/server";
+import createAPIClient from "@/lib/api";
 
 export async function POST(
   req: Request
@@ -14,15 +15,19 @@ export async function POST(
   }
 
   const supabase = await createClient()
+  const API = await createAPIClient(supabase)
 
   try {
-    console.warn("Hardcoded refresh token used here")
-    const refreshToken = process.env.STRAVA_REFRESH_TOKEN;
+    const { data, error: userError } = await supabase.auth.getUser()
+
+    const refreshToken = await API.getStravaRefreshToken()
+
+    // console.warn("Hardcoded refresh token used here")
+    // const refreshToken = process.env.STRAVA_REFRESH_TOKEN;
     if (!refreshToken) {
       throw new Error("Strava refresh token not configured");
     }
 
-    const { data, error: userError } = await supabase.auth.getUser()
 
     if(userError) {
       console.error(userError)

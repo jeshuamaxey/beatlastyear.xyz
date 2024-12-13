@@ -43,6 +43,8 @@ export class StravaAPI {
       );
 
       if (!response.ok) {
+        const err = await response.json();
+        console.error(err)
         throw new Error("Failed to fetch activities");
       }
 

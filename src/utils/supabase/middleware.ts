@@ -3,7 +3,9 @@ import { type NextRequest, NextResponse } from "next/server";
 import { Database } from "./autogen.types";
 
 const protectedRoutes = [
-  "/protected"
+  "/protected",
+  "/times",
+  "/p/me"
 ]
 
 export const updateSession = async (request: NextRequest) => {

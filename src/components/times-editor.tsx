@@ -7,10 +7,11 @@ import useTimesQuery from '@/hooks/useTimesQuery';
 import EditTimeDialog from './edit-time-dialog';
 import { ArrowRight } from 'lucide-react';
 import { formatTime } from '@/lib/utils';
-import { TableBody, TableCaption, TableHead, TableHeader, TableRow, Table } from './ui/table';
+import { TableBody, TableHead, TableHeader, TableRow, Table } from './ui/table';
 import { TableCell } from './ui/table';
 import SyncWithStravaButton from './sync-with-strava-button';
 import { useRouter } from 'next/navigation';
+import { Badge } from './ui/badge';
 
 
 
@@ -18,6 +19,7 @@ const TimeRow = ({time}: { time: Database["public"]["Tables"]["times"]["Row"]}) 
   return <TableRow>
     <TableCell>{time.year}</TableCell>
     <TableCell>{formatTime(time.time)}</TableCell>
+    <TableCell><Badge className={`capitalize ${time.data_source === "strava" ? "bg-orange-600" : ""}`}>{time.data_source}</Badge></TableCell>
     <TableCell>
       <EditTimeDialog mode="edit" defaults={time} />
     </TableCell>
@@ -46,15 +48,10 @@ const TimesEditor = () => {
   }
 
   return <div className="flex flex-col gap-4">
-    {/* <CardHeader> */}
     <div className="flex items-center justify-between">
       <h3 className="font-bold text-xl pl-2">My times</h3>
       <SyncWithStravaButton onSuccess={handleStravaSyncSuccess} className="mb-0" />
     </div>
-    {/* </CardHeader> */}
-    {/* <CardContent> */}
-
-    {/* <pre>{JSON.stringify(times, null, 2)}</pre> */}
 
     {times.length > 0 ? (
       <div className="flex flex-col gap-2 mb-2">
@@ -63,6 +60,7 @@ const TimesEditor = () => {
             <TableRow>
               <TableHead className="w-[100px]">Year</TableHead>
               <TableHead>Time</TableHead>
+              <TableHead>Source</TableHead>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>
@@ -81,7 +79,7 @@ const TimesEditor = () => {
       <EditTimeDialog mode="create" defaults={{year: defaultYear}} />
 
       <Button asChild>
-          <Link href={`/p/me`}>see chart <ArrowRight /></Link>
+        <Link href={`/p/me`}>see chart <ArrowRight /></Link>
       </Button>
     </div>
     
