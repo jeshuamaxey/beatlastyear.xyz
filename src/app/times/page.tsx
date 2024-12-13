@@ -1,7 +1,7 @@
-import TimesUI from "@/components/times-ui";
+import TimesEditor from "@/components/times-editor";
 
 const TimesPage = () => {
-  return <TimesUI />
+  return <TimesEditor />
 }
 
 export default TimesPage;

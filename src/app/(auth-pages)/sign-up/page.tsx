@@ -43,7 +43,7 @@ export default async function Signup(props: {
             type="string"
             name="slug"
             placeholder="creaky-turtle"
-            minLength={6}
+            minLength={3}
             required
           />
 

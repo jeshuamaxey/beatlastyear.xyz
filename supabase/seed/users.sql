@@ -40,9 +40,7 @@ INSERT INTO
       current_timestamp,
       '{"provider":"email","providers":["email"]}'::jsonb,
       ('{
-        "name": "user_' || (ROW_NUMBER() OVER ()) || '",
-        "interestedInHosting": "' || CASE (ROW_NUMBER() OVER () % 4) WHEN 0 THEN 'yes' WHEN 1 THEN 'no' WHEN 2 THEN 'i_want_to_know_more' WHEN 3 THEN 'not_sure' END || '",
-        "unverifiedPhone": "+44 7777 111 ' || LPAD((ROW_NUMBER() OVER ()::text), 3, '0') || '"
+        "slug": "slug_' || (ROW_NUMBER() OVER ()) || '"
       }')::jsonb,
       current_timestamp,
       current_timestamp,

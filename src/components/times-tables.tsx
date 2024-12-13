@@ -7,14 +7,12 @@ import React from 'react';
 
 import { LineLinearGradientChart } from "./charts/line-linear-gradient";
 import { Card } from "./ui/card";
+import useTimesQuery from "@/hooks/useTimesQuery";
 
 const TimesTable = () => {
   const supabase = createClient()
 
-  const timesQuery = useQuery({
-    queryFn: async () => await supabase.from('times').select(`*`).order('year', { ascending: true }),
-    queryKey: ['times']
-  })
+  const timesQuery = useTimesQuery()
 
   if(timesQuery.isLoading) {
     return <p>Loading</p>
@@ -26,14 +24,14 @@ const TimesTable = () => {
   const times = timesQuery.data!.data!
 
   return <div>
-    {times.map(({id, year, time, data_source}) => {
+    {/* {times.map(({id, year, time, data_source}) => {
       const ss = time % 60
       const mm = (time - ss)/60
 
       return <p key={id}>
         {year}: {mm}:{ss} seconds ({data_source})
       </p>
-    })}
+    })} */}
 
     {/* <RunningTimesChart data={times} /> */}
 

@@ -34,8 +34,8 @@ const useTimeUpsert = ({ onSuccess }: {
       const { error } = await supabase.from("times").upsert(
         timesToInsert,
         { onConflict: "profile_id, year, distance, sport" },
-      );
-
+      )
+      
       if(error) {
         console.error(error)
         throw new Error(error.message)

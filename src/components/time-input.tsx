@@ -11,23 +11,31 @@ const TimeInput = ({ defaultValue, onChange }: TimeInputProps) => {
   const mmRef = useRef<HTMLInputElement>(null)
   const ssRef = useRef<HTMLInputElement>(null)
 
-  let defaultMM = 0
   let defaultSS = 0
+  let defaultMM = 0
 
   if(defaultValue) {
-    defaultMM = defaultValue % 60
-    defaultSS = defaultValue = defaultMM
+    defaultSS = defaultValue % 60
+    defaultMM = (defaultValue - defaultSS)/60
   }
 
   const handeChange = (ev: SyntheticEvent) => {
     const el = ev.target as HTMLInputElement
     let time = 0
 
-    if(el.name === "time__mm") {
-      time = Number(el.value)*60 + Number((ssRef.current as HTMLInputElement).value)
+    const val = Number(el.value)
+    const ss = Number((ssRef.current as HTMLInputElement).value)
+    const mm = Number((mmRef.current as HTMLInputElement).value)
+
+    if(el.name === "time_mm") {
+      time = (val*60) + ss
     } else {
-      time = Number((mmRef.current as HTMLInputElement).value)*60 + Number(el.value)
+      time = (mm*60) + val
     }
+
+    // console.log({
+    //   val, mm, ss, time
+    // })
 
     if(onChange) {
       onChange(time)

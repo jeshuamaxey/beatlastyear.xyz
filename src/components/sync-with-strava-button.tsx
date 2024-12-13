@@ -24,7 +24,7 @@ const SyncWithStravaButton = ({className, onSuccess}: SyncWithStravaButtonProps)
   return <Button
     onClick={() => stravaMutation.mutate()}
     disabled={stravaMutation.isPending}
-    className={cn([className, "mb-4"])}
+    className={cn(["mb-4 bg-orange-600 hover:bg-orange-900", className])}
   >
     {stravaMutation.isPending ? "Syncing..." : "Sync with Strava"}
   </Button>

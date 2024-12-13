@@ -6,9 +6,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(
   req: Request
-) {
-  console.log("req.method :: ", req.method)
-  
+) {  
   if (req.method !== "POST") {
     return NextResponse.json({ message: "Method not allowed" }, {
       status: 405
