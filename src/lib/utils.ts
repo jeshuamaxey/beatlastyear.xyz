@@ -6,8 +6,9 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatTime(time: number) {
-  const ss = time % 60
-  const mm = (time - ss)/60
+  const secs = Math.round(time % 60)
+  const ss = String(Math.round(time % 60)).padStart(2, '0')
+  const mm = Math.round((time - secs)/60)
 
   return `${mm}:${ss}`
 }
