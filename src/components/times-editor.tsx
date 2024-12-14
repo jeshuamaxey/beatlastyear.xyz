@@ -18,10 +18,10 @@ import { Badge } from './ui/badge';
 const TimeRow = ({time}: { time: Database["public"]["Tables"]["times"]["Row"]}) => {
   return <TableRow>
     <TableCell>{time.year}</TableCell>
-    <TableCell>{formatTime(time.time)}</TableCell>
+    <TableCell className="font-mono">{formatTime(time.time)}</TableCell>
     <TableCell><Badge className={`capitalize ${time.data_source === "strava" ? "bg-orange-600" : ""}`}>{time.data_source}</Badge></TableCell>
     <TableCell>
-      <EditTimeDialog mode="edit" defaults={time} />
+      {time.data_source === "manual" &&  <EditTimeDialog mode="edit" defaults={time} />}
     </TableCell>
   </TableRow>
 }

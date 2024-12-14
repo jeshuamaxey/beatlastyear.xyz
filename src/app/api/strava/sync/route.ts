@@ -22,8 +22,6 @@ export async function POST(
 
     const refreshToken = await API.getStravaRefreshToken()
 
-    // console.warn("Hardcoded refresh token used here")
-    // const refreshToken = process.env.STRAVA_REFRESH_TOKEN;
     if (!refreshToken) {
       throw new Error("Strava refresh token not configured");
     }

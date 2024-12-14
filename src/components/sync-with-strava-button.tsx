@@ -26,6 +26,15 @@ const SyncWithStravaButton = ({className, onSuccess}: SyncWithStravaButtonProps)
     }
   })
 
+  const stravaDisconnectMutation = useMutation({
+    mutationKey: ['times'],
+    mutationFn: async () => await fetch("/api/strava/disconnect", { method: "GET" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["strava_profiles"]})
+      onSuccess && onSuccess();
+    }
+  })
+
   const classes = cn(["mb-4 bg-orange-600 hover:bg-orange-900", className])
 
   if(myProfileQuery.isPending) {
@@ -48,7 +57,7 @@ const SyncWithStravaButton = ({className, onSuccess}: SyncWithStravaButtonProps)
     disabled={stravaMutation.isPending}
     className={classes}
   >
-    {stravaMutation.isPending ? "Syncing..." : "Sync with Strava"}
+    {stravaMutation.isPending ? "Syncing..." : "Sync Strava"}
   </Button>
 
   const connectBtn = <Button
@@ -60,10 +69,10 @@ const SyncWithStravaButton = ({className, onSuccess}: SyncWithStravaButtonProps)
   </Button>
 
   const disconnectBtn = <Button
-    onClick={() => router.push(`/api/strava/disconnect`)}
-    disabled={stravaMutation.isPending}
+    onClick={() => stravaDisconnectMutation.mutate()}
+    disabled={stravaDisconnectMutation.isPending}
   >
-    Disconnect
+    {stravaDisconnectMutation.isPending ? "..." : "Disconnect"}
   </Button>
 
   if(profile.data?.strava_profiles) {

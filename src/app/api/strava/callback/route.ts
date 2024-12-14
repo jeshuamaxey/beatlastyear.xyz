@@ -51,9 +51,6 @@ export async function GET(req: Request) {
     });
 
     const stravaRes = await tokenResponse.json() as StravaRefreshTokenResponse;
-
-    console.log({stravaRes})
-
     const supabase = await createClient()
 
     const { data: { user }, error: userError } = await supabase.auth.getUser()
@@ -61,8 +58,6 @@ export async function GET(req: Request) {
     if(userError) {
       console.error(userError.message)
       throw new Error(userError.message)
-    } else {
-      console.log({user})
     }
 
     const { data, error } = await supabase.from('strava_profiles').upsert({
@@ -72,7 +67,6 @@ export async function GET(req: Request) {
     })
 
     if(error) {
-      console.error("SUPABASE ERROR")
       console.error(error)
       throw new Error(error.message)
     }    
@@ -86,6 +80,5 @@ export async function GET(req: Request) {
   const host = req.headers.get('host')
   const protocol = host?.includes('localhost:') ? 'http' : 'https';
   const redirectUri = `${protocol}://${host}/times`;
-  console.log("ALL GOOD :: REDIRECTING :: ", redirectUri)
   return redirect(redirectUri)
 }

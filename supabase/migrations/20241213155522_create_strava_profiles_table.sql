@@ -19,3 +19,7 @@ create policy "Users can insert their own Strava profile."
 create policy "Users can update own Strava profile."
   on strava_profiles for update
   using ( auth.uid() = profile_id );
+
+create policy "Users can delete their own Strava profile."
+  on strava_profiles for delete
+  using ( auth.uid() = profile_id );
