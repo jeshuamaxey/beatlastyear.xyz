@@ -11,10 +11,11 @@ type TimeInsert = Database["public"]["Tables"]["times"]["Insert"]
 
 type SyncWithStravaButtonProps = {
   className?: string
-  onSuccess?: (times?: TimeInsert[]) => void
+  onSyncSuccess?: (times?: TimeInsert[]) => void
+  onDisconnectSuccess?: () => void
 }
 
-const SyncWithStravaButton = ({className, onSuccess}: SyncWithStravaButtonProps) => {
+const SyncWithStravaButton = ({className, onSyncSuccess, onDisconnectSuccess}: SyncWithStravaButtonProps) => {
   const router = useRouter()
   const queryClient = useQueryClient()
 
@@ -30,7 +31,7 @@ const SyncWithStravaButton = ({className, onSuccess}: SyncWithStravaButtonProps)
       } = await res.json()
       const times = data.data
       queryClient.invalidateQueries({ queryKey: ["times"]})
-      onSuccess && onSuccess(times);
+      onSyncSuccess && onSyncSuccess(times);
     }
   })
 
@@ -39,7 +40,7 @@ const SyncWithStravaButton = ({className, onSuccess}: SyncWithStravaButtonProps)
     mutationFn: async () => await fetch("/api/strava/disconnect", { method: "GET" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["strava_profiles"]})
-      onSuccess && onSuccess();
+      onDisconnectSuccess && onDisconnectSuccess();
     }
   })
 

@@ -52,10 +52,17 @@ const TimesEditor = () => {
     })
   }
 
+  const handleStravaDisconnectSuccess = () => {
+    toast({
+      title: "Strava disconnected",
+      description: `Your strava account is no longer connected to Beat Last Year.`
+    })
+  }
+
   return <div className="flex flex-col gap-4">
     <div className="flex items-center justify-between">
       <h3 className="font-bold text-xl pl-2">My times</h3>
-      <SyncWithStravaButton onSuccess={handleStravaSyncSuccess} className="mb-0" />
+      <SyncWithStravaButton onSyncSuccess={handleStravaSyncSuccess} onDisconnectSuccess={handleStravaDisconnectSuccess} className="mb-0" />
     </div>
 
     {times.length > 0 ? (
