@@ -6,6 +6,7 @@ import "./globals.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import TanstackQuery from "@/providers/tanstack-query";
+import { Toaster } from "@/components/ui/toaster";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -48,6 +49,7 @@ export default function RootLayout({
                 </div>
               </div>
             </main>
+            <Toaster />
             <ReactQueryDevtools initialIsOpen={false} />
           </TanstackQuery>
         </ThemeProvider>

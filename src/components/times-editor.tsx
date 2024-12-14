@@ -12,8 +12,9 @@ import { TableCell } from './ui/table';
 import SyncWithStravaButton from './sync-with-strava-button';
 import { useRouter } from 'next/navigation';
 import { Badge } from './ui/badge';
+import { useToast } from '@/hooks/use-toast';
 
-
+type TimeInsert = Database["public"]["Tables"]["times"]["Insert"]
 
 const TimeRow = ({time}: { time: Database["public"]["Tables"]["times"]["Row"]}) => {
   return <TableRow>
@@ -27,6 +28,7 @@ const TimeRow = ({time}: { time: Database["public"]["Tables"]["times"]["Row"]}) 
 }
 
 const TimesEditor = () => {
+  const { toast } = useToast()
   const router = useRouter()
   const timesQuery = useTimesQuery()
   
@@ -43,8 +45,11 @@ const TimesEditor = () => {
   const mostRecentYear = Math.max(...times.map(t => t.year), thisYear)
   const defaultYear = Math.min(mostRecentYear + 1, thisYear)
 
-  const handleStravaSyncSuccess = () => {
-    router.push(`/p/me`)
+  const handleStravaSyncSuccess = (times?: TimeInsert[]) => {
+    toast({
+      title: "Sync succesful",
+      description: `We found ${times?.length} times in your Strava activity which have been combined with your existing data`
+    })
   }
 
   return <div className="flex flex-col gap-4">

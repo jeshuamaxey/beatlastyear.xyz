@@ -5,10 +5,13 @@ import { Button } from "./ui/button"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import useMyProfileQuery from "@/hooks/useMyProfileQuery"
+import { Database } from "@/utils/supabase/autogen.types"
+
+type TimeInsert = Database["public"]["Tables"]["times"]["Insert"]
 
 type SyncWithStravaButtonProps = {
   className?: string
-  onSuccess?: () => void
+  onSuccess?: (times?: TimeInsert[]) => void
 }
 
 const SyncWithStravaButton = ({className, onSuccess}: SyncWithStravaButtonProps) => {
@@ -20,9 +23,14 @@ const SyncWithStravaButton = ({className, onSuccess}: SyncWithStravaButtonProps)
   const stravaMutation = useMutation({
     mutationKey: ['times'],
     mutationFn: async () => await fetch("/api/strava/sync", { method: "POST" }),
-    onSuccess: () => {
+    onSuccess: async (res) => {
+      const data: {
+        status: number
+        data: TimeInsert[]
+      } = await res.json()
+      const times = data.data
       queryClient.invalidateQueries({ queryKey: ["times"]})
-      onSuccess && onSuccess();
+      onSuccess && onSuccess(times);
     }
   })
 

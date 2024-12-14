@@ -57,12 +57,18 @@ export async function POST(
 
     const { error } = await supabase.from("times").upsert(
       timesToInsert,
-      { onConflict: "profile_id, year, distance, sport" },
+      {
+        onConflict: "profile_id, year, distance, sport",
+        ignoreDuplicates: false
+      },
     );
 
     if (error) throw error;
 
-    return NextResponse.json({ message: "Sync completed" }, {
+    return NextResponse.json({
+      message: "Sync completed",
+      data: timesToInsert
+    }, {
       status: 200
     })
 

@@ -1,6 +1,6 @@
 import { Database } from "@/utils/supabase/autogen.types";
 import { createClient } from "@/utils/supabase/client";
-import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 const useTimeUpsert = ({ onSuccess }: {
   onSuccess?: () => void
@@ -26,8 +26,6 @@ const useTimeUpsert = ({ onSuccess }: {
         time: time.time,
         distance: "5km",
         sport: "running",
-        // date: run.date,
-        // strava_activity_id: run.activity_id,
         data_source: "manual"
       }))
   
