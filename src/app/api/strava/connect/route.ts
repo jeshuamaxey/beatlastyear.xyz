@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 
 export async function GET(req: Request) {
   const host = req.headers.get('host')
-  const clientId = process.env.STRAVA_CLIENT_ID;
+  const clientId = process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID;
   const protocol = host?.includes('localhost:') ? 'http' : 'https';
   const redirectUri = `${protocol}://${host}/api/strava/callback`;
 

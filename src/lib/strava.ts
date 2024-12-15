@@ -11,7 +11,7 @@ export class StravaAPI {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        client_id: process.env.STRAVA_CLIENT_ID,
+        client_id: process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID,
         client_secret: process.env.STRAVA_CLIENT_SECRET,
         refresh_token: refreshToken,
         grant_type: "refresh_token",
