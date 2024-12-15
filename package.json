@@ -4,6 +4,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "inngest": "npx inngest-cli@latest dev",
     "types": "npx supabase gen types --local > src/utils/supabase/autogen.types.ts"
   },
   "dependencies": {
