@@ -49,6 +49,9 @@ export class StravaAPI {
       }
 
       const activities = await response.json();
+
+      console.log(`New activities fetched: ${activities.length}`)
+
       if (activities.length === 0) break;
 
       allActivities = [...allActivities, ...activities];
