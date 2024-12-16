@@ -2,6 +2,7 @@ import { Database } from "@/utils/supabase/autogen.types";
 import { inngest } from "../client";
 import { StravaAPI } from "@/lib/strava";
 import { createAdminClient } from "../utils/supabase";
+import { env } from "process";
 
 export const syncStravaData = inngest.createFunction(
   { id: "sync-strava-data" },
@@ -16,7 +17,10 @@ export const syncStravaData = inngest.createFunction(
     }
 
     // create supabase client
-    const supabase = await createAdminClient()
+    const supabase = await createAdminClient(
+      event.data.env.NEXT_PUBLIC_SUPABASE_URL,
+      event.data.env.SUPABASE_SERVICE_KEY
+    )
     
     // get data from strava
     const fastest5Ks = await step.run("fetch-strava-activity-data", async () => {

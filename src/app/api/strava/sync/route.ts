@@ -26,8 +26,8 @@ export async function POST(
 
     const user = data.user!
     await supabase.from('strava_profiles')
-        .update({sync_status: "SYNCING"})
-        .eq('profile_id', data.user.id)
+      .update({sync_status: "SYNCING"})
+      .eq('profile_id', data.user.id)
 
     const refreshToken = await API.getStravaRefreshToken()
 
@@ -40,7 +40,12 @@ export async function POST(
       eventKey: process.env.INNGEST_EVENT_KEY,
       data: {
         userId: user.id,
-        refreshToken
+        refreshToken,
+
+        env: {
+          NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+          SUPABASE_SERVICE_KEY: process.env.SUPABASE_SERVICE_KEY
+        }
       },
     });
 
