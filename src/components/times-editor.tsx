@@ -10,7 +10,6 @@ import { formatTime } from '@/lib/utils';
 import { TableBody, TableHead, TableHeader, TableRow, Table } from './ui/table';
 import { TableCell } from './ui/table';
 import SyncWithStravaButton from './sync-with-strava-button';
-import { useRouter } from 'next/navigation';
 import { Badge } from './ui/badge';
 import { useToast } from '@/hooks/use-toast';
 
@@ -29,7 +28,6 @@ const TimeRow = ({time}: { time: Database["public"]["Tables"]["times"]["Row"]}) 
 
 const TimesEditor = () => {
   const { toast } = useToast()
-  const router = useRouter()
   const timesQuery = useTimesQuery()
   
   if(timesQuery.isLoading) {
@@ -47,8 +45,8 @@ const TimesEditor = () => {
 
   const handleStravaSyncSuccess = (times?: TimeInsert[]) => {
     toast({
-      title: "Sync succesful",
-      description: `We found ${times?.length} times in your Strava activity which have been combined with your existing data`
+      title: "Syncing",
+      description: `We are retrieving your Strava activity`
     })
   }
 

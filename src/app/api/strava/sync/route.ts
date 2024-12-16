@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { Database } from "@/utils/supabase/autogen.types";
 import { NextResponse } from "next/server";
 import createAPIClient from "@/lib/api";
+import { inngest } from "@/inngest/client";
 
 export async function POST(
   req: Request
@@ -34,48 +35,26 @@ export async function POST(
 
     const user = data.user!
 
-    // Get fresh access token
-    const accessToken = await StravaAPI.getAuthToken(refreshToken);
-
-    // Fetch activities
-    const activities = await StravaAPI.fetchAllActivities(accessToken);
-
-    // Analyze fastest 5Ks
-    const fastest5Ks = StravaAPI.analyzeFastest5KPerYear(activities);
-
-    // Store in Supabase
-    const timesToInsert: Database["public"]["Tables"]["times"]["Insert"][] = fastest5Ks.map((run) => ({
-      profile_id: user.id,
-      year: run.year,
-      time: run.time,
-      distance: "5km",
-      sport: "running",
-      date: run.date,
-      strava_activity_id: run.activity_id,
-      data_source: "strava"
-    }))
-
-    const { error } = await supabase.from("times").upsert(
-      timesToInsert,
-      {
-        onConflict: "profile_id, year, distance, sport",
-        ignoreDuplicates: false
+    const { ids } = await inngest.send({
+      name: "strava/sync",
+      eventKey: process.env.INNGEST_EVENT_KEY,
+      data: {
+        userId: user.id,
+        refreshToken
       },
-    );
-
-    if (error) throw error;
+    });
 
     return NextResponse.json({
-      message: "Sync completed",
-      data: timesToInsert
+      message: "Sync started",
+      eventIds: ids
     }, {
       status: 200
     })
 
   } catch (error) {
-    console.error("Sync failed:", error);
+    console.error("Sync failed to start:", error);
 
-    return NextResponse.json({ message: "Sync failed", error: String(error) }, {
+    return NextResponse.json({ message: "Sync failed to start", error: String(error) }, {
       status: 500
     })
   }

@@ -17,9 +17,13 @@ export const syncStravaData = inngest.createFunction(
 
     // create supabase client
     const supabase = await createAdminClient()
-
+    
     // get data from strava
     const fastest5Ks = await step.run("fetch-strava-activity-data", async () => {
+      await supabase.from('strava_profiles')
+        .update({sync_status: "SYNCING"})
+        .eq('profile_id', userId)
+      
       const accessToken = await StravaAPI.getAuthToken(refreshToken);
       // Fetch activities
       const activities = await StravaAPI.fetchAllActivities(accessToken);
@@ -51,6 +55,13 @@ export const syncStravaData = inngest.createFunction(
       );
   
       if (error) throw error;
+
+      await supabase.from('strava_profiles')
+        .update({
+          sync_status: "IDLE",
+          last_synced_at: new Date().toISOString()
+        })
+        .eq('profile_id', userId)
     })
 
     return { fastest5Ks };

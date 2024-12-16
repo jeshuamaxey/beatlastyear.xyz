@@ -55,18 +55,24 @@ export type Database = {
       strava_profiles: {
         Row: {
           athlete_profile: Json | null
+          last_synced_at: string | null
           profile_id: string
           refresh_token: string | null
+          sync_status: string | null
         }
         Insert: {
           athlete_profile?: Json | null
+          last_synced_at?: string | null
           profile_id: string
           refresh_token?: string | null
+          sync_status?: string | null
         }
         Update: {
           athlete_profile?: Json | null
+          last_synced_at?: string | null
           profile_id?: string
           refresh_token?: string | null
+          sync_status?: string | null
         }
         Relationships: [
           {

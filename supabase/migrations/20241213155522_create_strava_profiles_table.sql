@@ -2,6 +2,8 @@ create table public.strava_profiles (
   profile_id uuid not null references profiles on delete cascade,
   refresh_token text,
   athlete_profile jsonb,
+  sync_status text default 'IDLE' check (sync_status in ('IDLE', 'SYNCING')),
+  last_synced_at timestamp default null,
 
   primary key (profile_id)
 );

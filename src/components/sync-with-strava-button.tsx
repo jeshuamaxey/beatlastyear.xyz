@@ -31,6 +31,7 @@ const SyncWithStravaButton = ({className, onSyncSuccess, onDisconnectSuccess}: S
       } = await res.json()
       const times = data.data
       queryClient.invalidateQueries({ queryKey: ["times"]})
+      queryClient.invalidateQueries({ queryKey: ["strava_profile"]})
       onSyncSuccess && onSyncSuccess(times);
     }
   })
