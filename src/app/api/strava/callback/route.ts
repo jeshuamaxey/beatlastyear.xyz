@@ -1,5 +1,6 @@
 // api/strave/callback
 import { createClient } from '@/utils/supabase/server';
+import { inngest } from "@/inngest/client";
 import { redirect } from 'next/navigation';
 import { NextResponse } from "next/server";
 
@@ -63,13 +64,24 @@ export async function GET(req: Request) {
     const { data, error } = await supabase.from('strava_profiles').upsert({
       profile_id: user!.id,
       refresh_token: stravaRes.refresh_token,
-      athlete_profile: stravaRes.athlete
+      athlete_profile: stravaRes.athlete,
+      sync_status: "SYNCING"
     })
 
     if(error) {
       console.error(error)
       throw new Error(error.message)
-    }    
+    }
+
+    await inngest.send({
+      name: "strava/sync",
+      eventKey: process.env.INNGEST_EVENT_KEY,
+      data: {
+        userId: user!.id,
+        refreshToken: stravaRes.refresh_token
+      },
+    });
+
   } catch (error) {
     console.error(error)
     return NextResponse.json({ error: 'Failed to get refresh token' }, {

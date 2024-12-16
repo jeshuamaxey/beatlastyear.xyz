@@ -8,6 +8,7 @@ import useMyProfileQuery from "@/hooks/useMyProfileQuery"
 import { Database } from "@/utils/supabase/autogen.types"
 import { createClient } from "@/utils/supabase/client"
 import { useEffect } from "react"
+import { formatDistance } from "date-fns"
 
 type TimeInsert = Database["public"]["Tables"]["times"]["Insert"]
 type StravaProfile = Database["public"]["Tables"]["strava_profiles"]["Row"]
@@ -24,8 +25,8 @@ type SyncWithStravaButtonProps = {
 }
 
 const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconnectSuccess}: SyncWithStravaButtonProps) => {
-  const router = useRouter()
   const queryClient = useQueryClient()
+  const router = useRouter()
 
   const supabase = createClient()
 
@@ -89,14 +90,16 @@ const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconne
   const classes = cn(["mb-4 bg-orange-600 hover:bg-orange-900", className])
 
   if(myProfileQuery.isPending) {
-    return <Button className={classes} disabled>
+    return <Button
+      size="sm" className={classes} disabled>
       Checking...
     </Button>
   }
 
   if(myProfileQuery.isError) {
     console.error(myProfileQuery.error)
-    return <Button className={classes} disabled>
+    return <Button
+      size="sm" className={classes} disabled>
       Error
     </Button>
   }
@@ -106,6 +109,7 @@ const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconne
   const isSyncing = stravaMutation.isPending || profile.data?.strava_profiles?.sync_status === "SYNCING"
 
   const syncBtn = <Button
+    size="sm"
     onClick={() => stravaMutation.mutate()}
     disabled={isSyncing}
     className={classes}
@@ -114,6 +118,7 @@ const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconne
   </Button>
 
   const connectBtn = <Button
+    size="sm"
     onClick={() => router.push(`/api/strava/connect`)}
     disabled={stravaMutation.isPending}
     className={classes}
@@ -122,6 +127,7 @@ const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconne
   </Button>
 
   const disconnectBtn = <Button
+    size="sm"
     onClick={() => stravaDisconnectMutation.mutate()}
     disabled={stravaDisconnectMutation.isPending}
   >
@@ -129,10 +135,15 @@ const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconne
   </Button>
 
   if(profile.data?.strava_profiles) {
-    return <div className="flex gap-2">
-      <p>last synced at: {profile.data.strava_profiles.last_synced_at}</p>
-      {syncBtn}
-      {disconnectBtn}
+    const syncCopy = profile.data.strava_profiles.last_synced_at ? 
+      `last synced ${formatDistance(new Date(profile.data.strava_profiles.last_synced_at), new Date(), { addSuffix: true })}` :
+      `never synced`
+    return <div className="flex flex-col gap-1">
+      <div className="flex gap-2">
+        {syncBtn}
+        {disconnectBtn}
+      </div>
+      <p className="text-xs text-right">{syncCopy}</p>
     </div>
   } else {
     return connectBtn

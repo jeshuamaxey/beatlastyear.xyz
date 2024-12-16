@@ -1,7 +1,5 @@
 // api/strava/sync
-import { StravaAPI } from "@/lib/strava";
 import { createClient } from "@/utils/supabase/server";
-import { Database } from "@/utils/supabase/autogen.types";
 import { NextResponse } from "next/server";
 import createAPIClient from "@/lib/api";
 import { inngest } from "@/inngest/client";
