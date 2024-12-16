@@ -2,7 +2,6 @@ import { Database } from "@/utils/supabase/autogen.types";
 import { inngest } from "../client";
 import { StravaAPI } from "@/lib/strava";
 import { createAdminClient } from "../utils/supabase";
-import { env } from "process";
 
 export const syncStravaData = inngest.createFunction(
   { id: "sync-strava-data" },
@@ -10,23 +9,28 @@ export const syncStravaData = inngest.createFunction(
   async ({ event, step }) => {
 
     const userId = event.data.userId
-    const refreshToken = event.data.refreshToken
 
-    if(!userId || !refreshToken) {
-      throw new Error("Function requires userId and a strava refresh token to run")
+    if(!userId) {
+      throw new Error("Function requires userId to run")
     }
 
     // create supabase client
-    const supabase = await createAdminClient(
-      // event.data.env.NEXT_PUBLIC_SUPABASE_URL,
-      // event.data.env.SUPABASE_SERVICE_KEY
-    )
+    const supabase = await createAdminClient()
     
     // get data from strava
     const fastest5Ks = await step.run("fetch-strava-activity-data", async () => {
-      // await supabase.from('strava_profiles')
-      //   .update({sync_status: "SYNCING"})
-      //   .eq('profile_id', userId)
+      const { data, error } = await supabase.from('strava_profiles')
+        .select('refresh_token')
+        .eq('profile_id', userId)
+        .single()
+
+      if(error || !data.refresh_token) {
+        const msg = `No refresh token was found for user ${userId}`
+        console.error(msg)
+        if(error) console.error(error.message)
+        throw new Error(error?.message || msg)
+      }
+      const refreshToken = data.refresh_token
       
       const accessToken = await StravaAPI.getAuthToken(refreshToken);
       // Fetch activities
