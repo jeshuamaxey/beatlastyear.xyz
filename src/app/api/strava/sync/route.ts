@@ -21,19 +21,21 @@ export async function POST(
   try {
     const { data, error: userError } = await supabase.auth.getUser()
 
-    const refreshToken = await API.getStravaRefreshToken()
-
-    if (!refreshToken) {
-      throw new Error("Strava refresh token not configured");
-    }
-
-
     if(userError) {
       console.error(userError)
       throw new Error(userError.message)
     }
 
     const user = data.user!
+    await supabase.from('strava_profiles')
+        .update({sync_status: "SYNCING"})
+        .eq('profile_id', data.user.id)
+
+    const refreshToken = await API.getStravaRefreshToken()
+
+    if (!refreshToken) {
+      throw new Error("Strava refresh token not configured");
+    }
 
     const { ids } = await inngest.send({
       name: "strava/sync",

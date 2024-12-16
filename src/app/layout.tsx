@@ -3,8 +3,6 @@ import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import "./globals.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import TanstackQuery from "@/providers/tanstack-query";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -50,7 +48,6 @@ export default function RootLayout({
               </div>
             </main>
             <Toaster />
-            <ReactQueryDevtools initialIsOpen={false} />
           </TanstackQuery>
         </ThemeProvider>
       </body>

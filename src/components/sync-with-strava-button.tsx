@@ -6,18 +6,28 @@ import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import useMyProfileQuery from "@/hooks/useMyProfileQuery"
 import { Database } from "@/utils/supabase/autogen.types"
+import { createClient } from "@/utils/supabase/client"
+import { useEffect } from "react"
 
 type TimeInsert = Database["public"]["Tables"]["times"]["Insert"]
+type StravaProfile = Database["public"]["Tables"]["strava_profiles"]["Row"]
+
+type Payload = {
+  new: StravaProfile
+}
 
 type SyncWithStravaButtonProps = {
   className?: string
-  onSyncSuccess?: (times?: TimeInsert[]) => void
+  onSyncStart?: () => void
+  onSyncSuccess?: () => void
   onDisconnectSuccess?: () => void
 }
 
-const SyncWithStravaButton = ({className, onSyncSuccess, onDisconnectSuccess}: SyncWithStravaButtonProps) => {
+const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconnectSuccess}: SyncWithStravaButtonProps) => {
   const router = useRouter()
   const queryClient = useQueryClient()
+
+  const supabase = createClient()
 
   const myProfileQuery = useMyProfileQuery()
 
@@ -29,10 +39,12 @@ const SyncWithStravaButton = ({className, onSyncSuccess, onDisconnectSuccess}: S
         status: number
         data: TimeInsert[]
       } = await res.json()
-      const times = data.data
+
+      console.log({data})
+
       queryClient.invalidateQueries({ queryKey: ["times"]})
-      queryClient.invalidateQueries({ queryKey: ["strava_profile"]})
-      onSyncSuccess && onSyncSuccess(times);
+      queryClient.invalidateQueries({ queryKey: ["profiles", "me"]})
+      onSyncStart && onSyncStart();
     }
   })
 
@@ -40,10 +52,39 @@ const SyncWithStravaButton = ({className, onSyncSuccess, onDisconnectSuccess}: S
     mutationKey: ['times'],
     mutationFn: async () => await fetch("/api/strava/disconnect", { method: "GET" }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["strava_profiles"]})
+      queryClient.invalidateQueries({ queryKey: ["profiles", "me"]})
       onDisconnectSuccess && onDisconnectSuccess();
     }
   })
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('strava profiles updates')
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "strava_profiles"
+        },
+        (payload: Payload) => {
+          console.log({payload})
+
+          onSyncSuccess && onSyncSuccess();
+
+          queryClient.invalidateQueries({ queryKey: ["times"]})
+          queryClient.invalidateQueries({ queryKey: ["profiles", "me"]})
+
+        }
+      )
+
+    channel.subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+
+  }, [supabase])
 
   const classes = cn(["mb-4 bg-orange-600 hover:bg-orange-900", className])
 
@@ -62,12 +103,14 @@ const SyncWithStravaButton = ({className, onSyncSuccess, onDisconnectSuccess}: S
 
   const profile = myProfileQuery.data
 
+  const isSyncing = stravaMutation.isPending || profile.data?.strava_profiles?.sync_status === "SYNCING"
+
   const syncBtn = <Button
     onClick={() => stravaMutation.mutate()}
-    disabled={stravaMutation.isPending}
+    disabled={isSyncing}
     className={classes}
   >
-    {stravaMutation.isPending ? "Syncing..." : "Sync Strava"}
+    {isSyncing ? "Syncing..." : "Sync Strava"}
   </Button>
 
   const connectBtn = <Button
@@ -87,6 +130,7 @@ const SyncWithStravaButton = ({className, onSyncSuccess, onDisconnectSuccess}: S
 
   if(profile.data?.strava_profiles) {
     return <div className="flex gap-2">
+      <p>last synced at: {profile.data.strava_profiles.last_synced_at}</p>
       {syncBtn}
       {disconnectBtn}
     </div>

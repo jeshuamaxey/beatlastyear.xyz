@@ -20,9 +20,9 @@ export const syncStravaData = inngest.createFunction(
     
     // get data from strava
     const fastest5Ks = await step.run("fetch-strava-activity-data", async () => {
-      await supabase.from('strava_profiles')
-        .update({sync_status: "SYNCING"})
-        .eq('profile_id', userId)
+      // await supabase.from('strava_profiles')
+      //   .update({sync_status: "SYNCING"})
+      //   .eq('profile_id', userId)
       
       const accessToken = await StravaAPI.getAuthToken(refreshToken);
       // Fetch activities

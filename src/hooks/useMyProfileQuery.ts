@@ -13,7 +13,7 @@ const useMyProfileQuery = () => {
       }
 
       return await supabase.from('profiles')
-        .select(`*, strava_profiles(athlete_profile)`)
+        .select(`*, strava_profiles(athlete_profile, sync_status, last_synced_at)`)
         .eq('id', user!.id)
         .single()
     },

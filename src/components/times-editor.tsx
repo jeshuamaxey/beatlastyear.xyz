@@ -43,10 +43,17 @@ const TimesEditor = () => {
   const mostRecentYear = Math.max(...times.map(t => t.year), thisYear)
   const defaultYear = Math.min(mostRecentYear + 1, thisYear)
 
-  const handleStravaSyncSuccess = (times?: TimeInsert[]) => {
+  const handleStravaSyncStart = () => {
     toast({
       title: "Syncing",
       description: `We are retrieving your Strava activity`
+    })
+  }
+
+  const handleStravaSyncSuccess = () => {
+    toast({
+      title: "Sync complete",
+      description: `Your times have been updated with data from Strava`
     })
   }
 
@@ -60,7 +67,10 @@ const TimesEditor = () => {
   return <div className="flex flex-col gap-4">
     <div className="flex items-center justify-between">
       <h3 className="font-bold text-xl pl-2">My times</h3>
-      <SyncWithStravaButton onSyncSuccess={handleStravaSyncSuccess} onDisconnectSuccess={handleStravaDisconnectSuccess} className="mb-0" />
+      <SyncWithStravaButton
+        onSyncStart={handleStravaSyncStart}
+        onSyncSuccess={handleStravaSyncSuccess}
+        onDisconnectSuccess={handleStravaDisconnectSuccess} className="mb-0" />
     </div>
 
     {times.length > 0 ? (
