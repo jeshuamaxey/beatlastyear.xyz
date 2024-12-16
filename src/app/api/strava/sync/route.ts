@@ -42,10 +42,10 @@ export async function POST(
         userId: user.id,
         refreshToken,
 
-        env: {
-          NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-          SUPABASE_SERVICE_KEY: process.env.SUPABASE_SERVICE_KEY
-        }
+        // env: {
+        //   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+        //   SUPABASE_SERVICE_KEY: process.env.SUPABASE_SERVICE_KEY
+        // }
       },
     });
 

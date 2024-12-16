@@ -18,8 +18,8 @@ export const syncStravaData = inngest.createFunction(
 
     // create supabase client
     const supabase = await createAdminClient(
-      event.data.env.NEXT_PUBLIC_SUPABASE_URL,
-      event.data.env.SUPABASE_SERVICE_KEY
+      // event.data.env.NEXT_PUBLIC_SUPABASE_URL,
+      // event.data.env.SUPABASE_SERVICE_KEY
     )
     
     // get data from strava
