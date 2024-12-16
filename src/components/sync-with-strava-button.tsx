@@ -9,6 +9,8 @@ import { Database } from "@/utils/supabase/autogen.types"
 import { createClient } from "@/utils/supabase/client"
 import { useEffect } from "react"
 import { formatDistance } from "date-fns"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu"
+import { Badge } from "./ui/badge"
 
 type TimeInsert = Database["public"]["Tables"]["times"]["Insert"]
 type StravaProfile = Database["public"]["Tables"]["strava_profiles"]["Row"]
@@ -41,8 +43,6 @@ const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconne
         data: TimeInsert[]
       } = await res.json()
 
-      console.log({data})
-
       queryClient.invalidateQueries({ queryKey: ["times"]})
       queryClient.invalidateQueries({ queryKey: ["profiles", "me"]})
       onSyncStart && onSyncStart();
@@ -69,8 +69,6 @@ const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconne
           table: "strava_profiles"
         },
         (payload: Payload) => {
-          console.log({payload})
-
           onSyncSuccess && onSyncSuccess();
 
           queryClient.invalidateQueries({ queryKey: ["times"]})
@@ -108,43 +106,58 @@ const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconne
 
   const isSyncing = stravaMutation.isPending || profile.data?.strava_profiles?.sync_status === "SYNCING"
 
-  const syncBtn = <Button
-    size="sm"
+  const syncOption = <DropdownMenuItem
     onClick={() => stravaMutation.mutate()}
     disabled={isSyncing}
-    className={classes}
   >
-    {isSyncing ? "Syncing..." : "Sync Strava"}
-  </Button>
+    {isSyncing ? "Syncing..." : "Sync now"}
+  </DropdownMenuItem>
 
   const connectBtn = <Button
-    size="sm"
     onClick={() => router.push(`/api/strava/connect`)}
     disabled={stravaMutation.isPending}
-    className={classes}
+    className={cn(["mb-4 bg-orange-600 hover:bg-orange-900", className])}
   >
     Connect Strava
   </Button>
 
-  const disconnectBtn = <Button
-    size="sm"
+  const disconnectOption = <DropdownMenuItem
     onClick={() => stravaDisconnectMutation.mutate()}
     disabled={stravaDisconnectMutation.isPending}
   >
     {stravaDisconnectMutation.isPending ? "..." : "Disconnect"}
-  </Button>
+  </DropdownMenuItem>
 
   if(profile.data?.strava_profiles) {
     const syncCopy = profile.data.strava_profiles.last_synced_at ? 
       `last synced ${formatDistance(new Date(profile.data.strava_profiles.last_synced_at), new Date(), { addSuffix: true })}` :
       `never synced`
-    return <div className="flex flex-col gap-1">
-      <div className="flex gap-2">
-        {syncBtn}
-        {disconnectBtn}
-      </div>
-      <p className="text-xs text-right">{syncCopy}</p>
-    </div>
+
+    const syncIndicator = <Badge className="animatied animate-pulse bg-orange-600">Syncing...</Badge>
+
+    return <DropdownMenu>
+      <DropdownMenuTrigger disabled={isSyncing}>
+        <div className="flex gap-2">
+          {isSyncing ? syncIndicator : (
+            <Badge className="bg-orange-600 hover:bg-orange-600/80">Strava connected</Badge>
+          )}
+        </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="mr-2 text-right">
+        {syncOption}
+        {disconnectOption}
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel>{syncCopy}</DropdownMenuLabel>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  
+    // return <div className="flex flex-col gap-1">
+    //   <div className="flex gap-2">
+    //     {syncBtn}
+    //     {disconnectOption}
+    //   </div>
+    //   <p className="text-xs text-right">{syncCopy}</p>
+    // </div>
   } else {
     return connectBtn
   }
