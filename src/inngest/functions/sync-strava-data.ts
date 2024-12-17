@@ -3,11 +3,12 @@ import { inngest } from "../client";
 import { StravaAPI } from "@/lib/strava";
 import { createAdminClient } from "../utils/supabase";
 
+const functionId = "sync-strava-data"
+
 export const syncStravaData = inngest.createFunction(
-  { id: "sync-strava-data" },
+  { id:  functionId },
   { event: "strava/sync" },
   async ({ event, step }) => {
-
     const userId = event.data.userId
 
     if(!userId) {
@@ -31,7 +32,7 @@ export const syncStravaData = inngest.createFunction(
         throw new Error(error?.message || msg)
       }
       const refreshToken = data.refresh_token
-      
+
       const accessToken = await StravaAPI.getAuthToken(refreshToken);
       // Fetch activities
       const activities = await StravaAPI.fetchAllActivities(accessToken);
@@ -74,4 +75,26 @@ export const syncStravaData = inngest.createFunction(
 
     return { fastest5Ks };
   },
+);
+
+export const cleanupFailedSyncStravaData = inngest.createFunction(
+  { id: `${functionId}-failed` },
+  {
+    event: "inngest/function.failed",
+    // The function ID is a hyphenated slug of the App ID w/ the functions' id
+    if: `event.data.function_id == '${process.env.INNGEST_APP_ID}-${functionId}'`
+  },
+  async ({ event, step, logger }) => {
+    await step.run("reset-strava-profile-sync-status", async () => {
+      const originalTriggeringEvent = event.data.event;
+      logger.info(`Sync was failed: ${originalTriggeringEvent.data.importId}`)
+
+      const supabase = await createAdminClient()
+      await supabase.from('strava_profiles')
+      .update({
+        sync_status: "IDLE"
+      })
+      .eq('profile_id', originalTriggeringEvent.data.userId)
+    })
+  }
 );
