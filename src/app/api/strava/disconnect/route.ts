@@ -4,6 +4,7 @@ import { StravaAPI } from '@/lib/strava';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { NextResponse } from "next/server";
+import posthog from 'posthog-js';
 
 export async function GET(req: Request) {
   const supabase = await createClient()
@@ -33,7 +34,7 @@ export async function GET(req: Request) {
     if(error) {
       console.error(error)
       throw new Error(error.message)
-    }    
+    }
   } catch (error) {
     console.error(error)
     return NextResponse.json({ error: 'Failed to deauthorise app' }, {

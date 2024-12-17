@@ -11,6 +11,7 @@ import { useEffect } from "react"
 import { formatDistance } from "date-fns"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { Badge } from "./ui/badge"
+import posthog from "posthog-js"
 
 type TimeInsert = Database["public"]["Tables"]["times"]["Insert"]
 type StravaProfile = Database["public"]["Tables"]["strava_profiles"]["Row"]
@@ -45,7 +46,13 @@ const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconne
 
       queryClient.invalidateQueries({ queryKey: ["times"]})
       queryClient.invalidateQueries({ queryKey: ["profiles", "me"]})
+
+      posthog.capture('strava-sync-start-successful')
+
       onSyncStart && onSyncStart();
+    },
+    onError: () => {
+      posthog.capture('strava-sync-start-failed')
     }
   })
 
@@ -54,7 +61,13 @@ const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconne
     mutationFn: async () => await fetch("/api/strava/disconnect", { method: "GET" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profiles", "me"]})
+
+      posthog.capture('strava-disconnect-successful')
+
       onDisconnectSuccess && onDisconnectSuccess();
+    },
+    onError: () => {
+      posthog.capture('strava-disconnect-failed')
     }
   })
 
@@ -107,14 +120,20 @@ const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconne
   const isSyncing = stravaMutation.isPending || profile.data?.strava_profiles?.sync_status === "SYNCING"
 
   const syncOption = <DropdownMenuItem
-    onClick={() => stravaMutation.mutate()}
+    onClick={() => {
+      posthog.capture("strava-sync-start-requested")
+      stravaMutation.mutate()
+    }}
     disabled={isSyncing}
   >
     {isSyncing ? "Syncing..." : "Sync now"}
   </DropdownMenuItem>
 
   const connectBtn = <Button
-    onClick={() => router.push(`/api/strava/connect`)}
+    onClick={() => {
+      posthog.capture('strava-connect-requested')
+      router.push(`/api/strava/connect`)
+    }}
     disabled={stravaMutation.isPending}
     className={cn(["mb-4 bg-orange-600 hover:bg-orange-900", className])}
   >
@@ -122,7 +141,10 @@ const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconne
   </Button>
 
   const disconnectOption = <DropdownMenuItem
-    onClick={() => stravaDisconnectMutation.mutate()}
+    onClick={() => {
+      posthog.capture('strava-disconnect-requested')
+      stravaDisconnectMutation.mutate()
+    }}
     disabled={stravaDisconnectMutation.isPending}
   >
     {stravaDisconnectMutation.isPending ? "..." : "Disconnect"}
@@ -150,7 +172,7 @@ const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconne
         <DropdownMenuLabel>{syncCopy}</DropdownMenuLabel>
       </DropdownMenuContent>
     </DropdownMenu>
-  
+
     // return <div className="flex flex-col gap-1">
     //   <div className="flex gap-2">
     //     {syncBtn}

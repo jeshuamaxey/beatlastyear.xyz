@@ -4,6 +4,9 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import PostHogServerClient from "@/lib/posthog";
+
+const posthog = PostHogServerClient()
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -20,7 +23,7 @@ export const signUpAction = async (formData: FormData) => {
     );
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { data: { user}, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -35,6 +38,10 @@ export const signUpAction = async (formData: FormData) => {
     console.error(error.code + " " + error.message);
     return encodedRedirect("error", "/sign-up", error.message);
   } else {
+    posthog.identify({
+      distinctId: user!.id
+    });
+
     return encodedRedirect(
       "success",
       "/sign-up",
@@ -48,7 +55,7 @@ export const signInAction = async (formData: FormData) => {
   const password = formData.get("password") as string;
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data: { user }, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
@@ -57,7 +64,11 @@ export const signInAction = async (formData: FormData) => {
     return encodedRedirect("error", "/sign-in", error.message);
   }
 
-  return redirect(`/p/me`)
+  posthog.identify({
+    distinctId: user!.id
+  });
+
+  return redirect(`/post/sign-in`)
 };
 
 export const forgotPasswordAction = async (formData: FormData) => {
@@ -134,5 +145,5 @@ export const resetPasswordAction = async (formData: FormData) => {
 export const signOutAction = async () => {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  return redirect("/sign-in");
+  return redirect("/post/sign-out");
 };

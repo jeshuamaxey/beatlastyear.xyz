@@ -4,8 +4,9 @@ import { Database } from "./autogen.types";
 
 const protectedRoutes = [
   "/protected",
+  "/post/sign-in",
   "/times",
-  "/p/me"
+  "/p/me",
 ]
 
 export const updateSession = async (request: NextRequest) => {

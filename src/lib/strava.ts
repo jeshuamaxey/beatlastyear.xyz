@@ -1,3 +1,5 @@
+import { StravaAuthTokenResponse, StravaAuthTokenResponseError, StravaAuthTokenResponseSuccess } from "@/app/api/strava/types";
+
 // lib/strava.ts
 export class StravaAPI {
   private static AUTH_URL = "https://www.strava.com/oauth/token";
@@ -19,10 +21,18 @@ export class StravaAPI {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to authenticate with Strava");
+      const data = await response.json() as StravaAuthTokenResponseError;
+      console.error(data.message)
+      console.error(data.errors)
+
+      const refreshTokenInvalid = data.errors && data.errors.some(err => err.field === "refresh_token" && err.code === "invalid")
+
+      console.error(`refreshTokenInvalid: ${refreshTokenInvalid}`)
+
+      throw new Error(`Failed to authenticate with Strava. Msg: ${data.message}.`);
     }
 
-    const data = await response.json();
+    const data = await response.json() as StravaAuthTokenResponseSuccess;
     return data.access_token;
   }
 

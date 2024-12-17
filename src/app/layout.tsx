@@ -6,6 +6,8 @@ import "./globals.css";
 import TanstackQuery from "@/providers/tanstack-query";
 import { Toaster } from "@/components/ui/toaster";
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { CSPostHogProvider } from "@/providers/cs-posthog-provider";
+import IdentifyUserToPosthog from "@/components/id-user-to-posthog";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -26,32 +28,34 @@ export default function RootLayout({
   return (
     <html lang="en" className={GeistSans.className} suppressHydrationWarning>
       <body className="bg-background text-foreground">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <TanstackQuery>
-            <main className="min-h-screen flex flex-col items-center">
-              <div className="flex-1 w-full flex flex-col gap-2 items-center">
-                <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-                  <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-                    <div className="flex gap-5 items-center font-semibold">
-                      <Link href={"/"}>Beat last year</Link>
+        <CSPostHogProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <TanstackQuery>
+              <main className="min-h-screen flex flex-col items-center">
+                <div className="flex-1 w-full flex flex-col gap-2 items-center">
+                  <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
+                    <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
+                      <div className="flex gap-5 items-center font-semibold">
+                        <Link href={"/"}>Beat last year</Link>
+                      </div>
+                      <HeaderAuth />
                     </div>
-                    <HeaderAuth />
+                  </nav>
+                  <div className="w-full max-w-5xl flex flex-col gap-2 p-4">
+                    {children}
                   </div>
-                </nav>
-                <div className="w-full max-w-5xl flex flex-col gap-2 p-4">
-                  {children}
                 </div>
-              </div>
-            </main>
-            <SpeedInsights />
-            <Toaster />
-          </TanstackQuery>
-        </ThemeProvider>
+              </main>
+              <SpeedInsights />
+              <Toaster />
+            </TanstackQuery>
+          </ThemeProvider>
+        </CSPostHogProvider>
       </body>
     </html>
   );
