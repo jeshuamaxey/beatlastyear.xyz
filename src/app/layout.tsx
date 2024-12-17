@@ -5,6 +5,7 @@ import Link from "next/link";
 import "./globals.css";
 import TanstackQuery from "@/providers/tanstack-query";
 import { Toaster } from "@/components/ui/toaster";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -47,6 +48,7 @@ export default function RootLayout({
                 </div>
               </div>
             </main>
+            <SpeedInsights />
             <Toaster />
           </TanstackQuery>
         </ThemeProvider>
