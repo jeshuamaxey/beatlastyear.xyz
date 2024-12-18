@@ -27,11 +27,6 @@ const rubikMonoOne = Rubik_Mono_One({
   weight: '400'
 })
 
-console.log({
-  hostGrotesk,
-  rubikMonoOne
-})
-
 export default function RootLayout({
   children,
 }: {
