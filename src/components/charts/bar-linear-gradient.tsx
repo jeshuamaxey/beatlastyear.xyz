@@ -1,7 +1,6 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 
 import {
   Card,
@@ -24,19 +23,22 @@ const chartConfig = {
     label: "pbs",
     color: "hsl(var(--chart-4))",
   },
+  label: {
+    color: "hsl(var(--background))",
+  },
 } satisfies ChartConfig
 
-type LineLinearGradientChartProps = {
+type BarLinearGradientChartProps = {
   title: string
   description?: string
   chartData: Database["public"]["Tables"]["times"]["Row"][]
 }
 
-export function LineLinearGradientChart({ title, description, chartData }: LineLinearGradientChartProps) {
+export function BarLinearGradientChart({ title, description, chartData }: BarLinearGradientChartProps) {
   const longestTime = chartData.sort((a, b) => b.time - a.time)[0].time
   const scaleFactor = 1.2
 
-  const timeToPlottableTime = (time: LineLinearGradientChartProps["chartData"][0]) => {
+  const timeToPlottableTime = (time: BarLinearGradientChartProps["chartData"][0]) => {
     return {
       ...time,
       plottableTime: (longestTime*scaleFactor) - time.time
@@ -47,7 +49,7 @@ export function LineLinearGradientChart({ title, description, chartData }: LineL
     return (longestTime*scaleFactor) - plottableTime
   }
 
-  const plottingData = chartData.map(timeToPlottableTime)
+  const plottingData = chartData.map(timeToPlottableTime).reverse()
 
   const formatYAxis = (value: number) => {
     return formatTime(plottableTimeToTime(value))
@@ -61,8 +63,9 @@ export function LineLinearGradientChart({ title, description, chartData }: LineL
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <AreaChart
+          <BarChart
             accessibilityLayer
+            layout="vertical"
             data={plottingData}
             margin={{
               left: 12,
@@ -70,23 +73,18 @@ export function LineLinearGradientChart({ title, description, chartData }: LineL
             }}
           >
             <CartesianGrid vertical={false} />
-            <YAxis tickFormatter={formatYAxis} />
-            <XAxis
+            <YAxis
+              tickFormatter={formatYAxis}
+              hide
+              type="category"
               dataKey="year"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-            />
-            <ChartTooltip cursor={false} content={
-              <ChartTooltipContent
-                /* @ts-expect-error: some type shenanigans */
-                formatter={(_0, _1, _2, _3, time: LineLinearGradientChartProps["chartData"][0]) => {
-                  return <p>{time.year}: {formatTime(time.time as number)}</p>
-                }}
               />
-              } />
+            <XAxis
+              type="number"
+              hide
+            />
             <defs>
-              <linearGradient id="fillRunning" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="fillRunningVert" x1="1" y1="0" x2="0" y2="0">
                 <stop
                   offset="5%"
                   stopColor="var(--color-pbs)"
@@ -99,15 +97,31 @@ export function LineLinearGradientChart({ title, description, chartData }: LineL
                 />
               </linearGradient>
             </defs>
-            <Area
+            <Bar
               dataKey="plottableTime"
               type="natural"
-              fill="url(#fillRunning)"
+              fill="url(#fillRunningVert)"
               fillOpacity={0.4}
-              stroke="var(--color-pbs)"
               stackId="a"
-            />
-          </AreaChart>
+              layout="vertical"
+              >
+                <LabelList
+                  dataKey="year"
+                  position="insideLeft"
+                  offset={8}
+                  className="fill-foreground"
+                  fontSize={12}
+                />
+                <LabelList
+                  dataKey="plottableTime"
+                  formatter={(v: number) => formatTime(plottableTimeToTime(v))}
+                  position="right"
+                  offset={8}
+                  className="fill-foreground"
+                  fontSize={12}
+                />
+            </Bar>
+          </BarChart>
         </ChartContainer>
       </CardContent>
     </>

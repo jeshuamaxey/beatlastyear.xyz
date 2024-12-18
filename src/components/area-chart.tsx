@@ -7,7 +7,7 @@ import { Card } from "./ui/card";
 import useTimesQuery from "@/hooks/useTimesQuery";
 import useMyProfileQuery from '@/hooks/useMyProfileQuery';
 
-const TimesTable = () => {
+const AreaChart = () => {
   const timesQuery = useTimesQuery()
   const profileQuery = useMyProfileQuery()
 
@@ -40,8 +40,7 @@ const TimesTable = () => {
         chartData={times}
         />
     </Card>
-    
   </div>
 }
 
-export default TimesTable
+export default AreaChart

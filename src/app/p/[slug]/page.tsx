@@ -1,7 +1,6 @@
-import TimesTable from "@/components/times-tables";
-import { Button } from "@/components/ui/button";
+import AreaChart from "@/components/area-chart";
+import BarChart from "@/components/bar-chart";
 import { createClient } from "@/utils/supabase/server";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function ProtectedPage() {
@@ -17,7 +16,8 @@ export default async function ProtectedPage() {
 
   return (
     <div className="w-full px-4 flex flex-col gap-4">
-      <TimesTable />
+      <AreaChart />
+      <BarChart />
     </div>
   );
 }
