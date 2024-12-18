@@ -1,7 +1,9 @@
 import TimesEditor from "@/components/times-editor";
 
 const TimesPage = () => {
-  return <TimesEditor />
+  return <div className="px-4">
+    <TimesEditor />
+  </div>
 }
 
 export default TimesPage;
