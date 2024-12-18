@@ -16,15 +16,7 @@ export default async function ProtectedPage() {
   }
 
   return (
-    <div className="w-full max-w-5xl flex-1 flex flex-col gap-12">
-      <div className="flex">
-        <Button asChild>
-          <Link href="/times">
-            Edit my times
-          </Link>
-        </Button>
-      </div>
-
+    <div className="w-full px-4 flex flex-col gap-4">
       <TimesTable />
     </div>
   );
