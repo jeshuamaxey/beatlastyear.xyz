@@ -14,7 +14,7 @@ const SignUpButton = () => (
 export default async function Index() {
   return (
     <div className="flex flex-col">
-      <section className="h-svh max-h-svh w-full bg-gradient-to-b from-slate-50 to-slate-100 flex flex-col items-center">
+      <section className="h-svh max-h-svh w-full bg-gradient-to-b from-background from-15% to-green-950 flex flex-col items-center">
         <SiteNav />
 
         <div className="w-full max-w-5xl flex flex-col flex-1 py-8 md:py-24 px-4">
@@ -39,7 +39,7 @@ export default async function Index() {
 
       </section>
 
-      <section className="h-svh max-h-svh w-full bg-gradient-to-b from-slate-100 to-slate-200 flex flex-col p-2 items-center justify-around">
+      <section className="h-svh max-h-svh w-full bg-gradient-to-b from-green-950 to-green-900 flex flex-col p-2 items-center justify-around">
         <div className="flex flex-col gap-4 w-full max-w-5xl">
           <h2 className="font-display text-2xl mb-4 md:text-6xl p-2 leading-6">
             Celebrate personal best progression
@@ -66,26 +66,28 @@ export default async function Index() {
         </div>
       </section>
 
-      <section className="h-svh max-h-svh w-full bg-gradient-to-b from-slate-200 to-slate-100 flex flex-col p-2 items-center justify-around">
+      <section className="h-svh max-h-svh w-full bg-gradient-to-b from-green-900 to-green-950 flex flex-col p-2 items-center justify-around">
         <div className="h-full flex flex-col gap-4 w-full max-w-5xl">
           <h2 className="font-display text-2xl  my-4 md:text-6xl p-2">
             How it works
           </h2>
 
           <div className="flex-1 flex flex-col md:flex-row items-center text-center">
-            <div className="p-10 flex flex-col justify-center gap-2 rounded-lg bg-white w-2/3 md:rounded-full md:w-1/4 md:aspect-square">
+            <div className="p-10 flex flex-col justify-center gap-2 rounded-lg bg-white text-slate-950 -ml-24 md:ml-0 w-2/3 md:rounded-full md:w-1/4 md:aspect-square">
               <h3 className="text-xl font-bold">Sign up</h3>
               <p>Create an account in seconds</p>
             </div>
+
             <div className="flex-1 w-1 md:w-auto md:h-1 bg-white"></div>
             
-            <div className="p-10 flex flex-col justify-center gap-2 rounded-lg bg-white w-2/3 md:rounded-full md:w-1/4 md:aspect-square">
+            <div className="p-10 flex flex-col justify-center gap-2 rounded-lg bg-white text-slate-950 ml-0 md:ml-0 w-2/3 md:rounded-full md:w-1/4 md:aspect-square">
               <h3 className="text-xl font-bold">Add your data</h3>
               <p>Sync with Strava or manually input your PBs</p>
             </div>
+
             <div className="flex-1 w-1 md:w-auto md:h-1 bg-white"></div>
             
-            <div className="p-10 flex flex-col justify-center gap-2 rounded-lg bg-white w-2/3 md:rounded-full md:w-1/4 md:aspect-square">
+            <div className="p-10 flex flex-col justify-center gap-2 rounded-lg bg-white text-slate-950 ml-24 md:ml-0 w-2/3 md:rounded-full md:w-1/4 md:aspect-square">
               <h3 className="text-xl font-bold">Celebrate</h3>
               <p>Post graphics to Instagram, Facebook, and more.</p>
             </div>
@@ -93,8 +95,8 @@ export default async function Index() {
         </div>
       </section>
 
-      <section className="h-svh max-h-svh w-full bg-gradient-to-b from-slate-100 to-slate-700 flex flex-col py-12 px-2 items-center justify-around">
-        <div className="h-full flex flex-col gap-4 w-full max-w-5xl">
+      <section className="h-svh max-h-svh w-full bg-gradient-to-b from-green-950 to-background flex flex-col py-12 px-2 items-center justify-around">
+        <div className="h-full flex flex-col justify-center gap-4 w-full max-w-5xl">
           <div className="relative md:flex">
             <Image className="rounded-md md:w-1/2" src="/jm-ironman-finish-crop.jpg" alt="James McAulay crossing the finish line at an ironman event" width={1392} height={1392} />
 
@@ -108,14 +110,14 @@ export default async function Index() {
               </div>
             </div>
           </div>
-            <div className="flex md:hidden w-full justify-center">
-              <SignUpButton />
-            </div>
+          <div className="flex md:hidden w-full justify-center">
+            <SignUpButton />
+          </div>
         </div>
       </section>
 
-      <footer className="h-32 w-full bg-gradient-to-b from-slate-700 to-slate-950 flex flex-col p-2 items-center">
-        <div className="h-full flex flex-col justify-end gap-4 w-full max-w-5xl text-white">
+      <footer className="h-16 w-full bg-background flex flex-col p-12 items-center">
+        <div className="h-full flex flex-col justify-end gap-4 w-full max-w-5xl text-foreground text-center">
           <p>&copy; Beat Last Year {new Date().getFullYear()}</p>
         </div>
       </footer>
