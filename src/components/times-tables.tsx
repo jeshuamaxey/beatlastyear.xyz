@@ -1,8 +1,5 @@
 "use client"
 
-import { createClient } from "@/utils/supabase/client"
-import { useQuery } from "@tanstack/react-query"
-
 import React from 'react';
 
 import { LineLinearGradientChart } from "./charts/line-linear-gradient";
@@ -10,8 +7,6 @@ import { Card } from "./ui/card";
 import useTimesQuery from "@/hooks/useTimesQuery";
 
 const TimesTable = () => {
-  const supabase = createClient()
-
   const timesQuery = useTimesQuery()
 
   if(timesQuery.isLoading) {

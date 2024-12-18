@@ -8,7 +8,7 @@ export default async function Layout({
   return (
     <div className="flex flex-col gap-12">
       <SiteNav />
-      <div className="max-w-5xl flex flex-col gap-12 items-start">{children}</div>
+      <div className="w-full max-w-5xl mx-auto flex flex-col gap-12 items-start">{children}</div>
     </div>
   );
 }
