@@ -7,7 +7,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -18,11 +17,12 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 import { Database } from "@/utils/supabase/autogen.types"
+import { formatTime } from "@/lib/utils"
 
 const chartConfig = {
-  mobile: {
-    label: "Mobile",
-    color: "hsl(var(--chart-2))",
+  pbs: {
+    label: "pbs",
+    color: "hsl(var(--chart-4))",
   },
 } satisfies ChartConfig
 
@@ -33,12 +33,24 @@ type LineLinearGradientChartProps = {
 }
 
 export function LineLinearGradientChart({ title, description, chartData }: LineLinearGradientChartProps) {
+  const longestTime = chartData.sort((a, b) => b.time - a.time)[0].time
+  const scaleFactor = 1.2
+
+  const timeToPlottableTime = (time: LineLinearGradientChartProps["chartData"][0]) => {
+    return {
+      ...time,
+      plottableTime: (longestTime*scaleFactor) - time.time
+    }
+  }
+
+  const plottableTimeToTime = (plottableTime: number) => {
+    return (longestTime*scaleFactor) - plottableTime
+  }
+
+  const plottingData = chartData.map(timeToPlottableTime)
+
   const formatYAxis = (value: number) => {
-    // Convert the transformed value back to a time
-    const seconds = 1800 - value;
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    return formatTime(plottableTimeToTime(value))
   };
 
   return (
@@ -51,7 +63,7 @@ export function LineLinearGradientChart({ title, description, chartData }: LineL
         <ChartContainer config={chartConfig}>
           <AreaChart
             accessibilityLayer
-            data={chartData}
+            data={plottingData}
             margin={{
               left: 12,
               right: 12,
@@ -64,58 +76,40 @@ export function LineLinearGradientChart({ title, description, chartData }: LineL
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              // tickFormatter={(value) => value.slice(0, 3)}
             />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+            <ChartTooltip cursor={false} content={
+              <ChartTooltipContent
+                /* @ts-expect-error: some type shenanigans */
+                formatter={(_0, _1, _2, _3, time: LineLinearGradientChartProps["chartData"][0]) => {
+                  return <p>{time.year}: {formatTime(time.time as number)}</p>
+                }}
+              />
+              } />
             <defs>
-              {/* <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient> */}
               <linearGradient id="fillRunning" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-mobile)"
-                  stopOpacity={0.8}
+                  stopColor="var(--color-pbs)"
+                  stopOpacity={0.9}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-mobile)"
+                  stopColor="var(--color-pbs)"
                   stopOpacity={0.1}
                 />
               </linearGradient>
             </defs>
             <Area
-              dataKey="time"
+              dataKey="plottableTime"
               type="natural"
               fill="url(#fillRunning)"
               fillOpacity={0.4}
-              stroke="var(--color-mobile)"
+              stroke="var(--color-pbs)"
               stackId="a"
             />
           </AreaChart>
         </ChartContainer>
       </CardContent>
-      {/* <CardFooter>
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-2 font-medium leading-none">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              January - June 2024
-            </div>
-          </div>
-        </div>
-      </CardFooter> */}
     </Card>
   )
 }

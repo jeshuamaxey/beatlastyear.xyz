@@ -5,35 +5,38 @@ import React from 'react';
 import { LineLinearGradientChart } from "./charts/line-linear-gradient";
 import { Card } from "./ui/card";
 import useTimesQuery from "@/hooks/useTimesQuery";
+import useMyProfileQuery from '@/hooks/useMyProfileQuery';
 
 const TimesTable = () => {
   const timesQuery = useTimesQuery()
+  const profileQuery = useMyProfileQuery()
 
-  if(timesQuery.isLoading) {
+  const isLoading = profileQuery.isLoading || timesQuery.isLoading
+  const isError = profileQuery.isError || timesQuery.isError
+
+  if(isLoading) {
     return <p>Loading</p>
   }
-  if(timesQuery.isError) {
+  if(isError) {
     return <p>Something went wrong</p>
   }
 
   const times = timesQuery.data!.data!
+  const profile = profileQuery.data!.data!
+
+  console.log({profile})
+
+  const yearMin = times[0].year
+  const yearMax = times[times.length-1].year
+
+  const name = profile.name ? `${profile.name}'s` : "Your"
+  const description = `${name} 5k PBs from ${yearMin} to ${yearMax}`
 
   return <div>
-    {/* {times.map(({id, year, time, data_source}) => {
-      const ss = time % 60
-      const mm = (time - ss)/60
-
-      return <p key={id}>
-        {year}: {mm}:{ss} seconds ({data_source})
-      </p>
-    })} */}
-
-    {/* <RunningTimesChart data={times} /> */}
-
     <Card className="w-full max-w-2xl">
       <LineLinearGradientChart
         title="Best 5k times"
-        description="Showing total visitors for the last 6 months"
+        description={description}
         chartData={times}
         />
     </Card>
