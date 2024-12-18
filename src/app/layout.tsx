@@ -1,13 +1,10 @@
-import HeaderAuth from "@/components/header-auth";
-import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "next-themes";
-import Link from "next/link";
 import "./globals.css";
 import TanstackQuery from "@/providers/tanstack-query";
 import { Toaster } from "@/components/ui/toaster";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { CSPostHogProvider } from "@/providers/cs-posthog-provider";
-import IdentifyUserToPosthog from "@/components/id-user-to-posthog";
+import { Host_Grotesk, Rubik_Mono_One } from 'next/font/google'
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -19,6 +16,22 @@ export const metadata = {
   description: "Show yourself and the world you're getting better every year",
 };
 
+const hostGrotesk = Host_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-host-grotesk',
+})
+
+const rubikMonoOne = Rubik_Mono_One({
+  subsets: ['latin'],
+  variable: '--font-rubic-mono-one',
+  weight: '400'
+})
+
+console.log({
+  hostGrotesk,
+  rubikMonoOne
+})
+
 export default function RootLayout({
   children,
 }: {
@@ -26,7 +39,7 @@ export default function RootLayout({
 }) {
 
   return (
-    <html lang="en" className={GeistSans.className} suppressHydrationWarning>
+    <html lang="en" className={`${hostGrotesk.variable} ${rubikMonoOne.variable} font-sans`} suppressHydrationWarning>
       <body className="bg-background text-foreground">
         <CSPostHogProvider>
           <ThemeProvider
@@ -36,20 +49,8 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <TanstackQuery>
-              <main className="min-h-screen flex flex-col items-center">
-                <div className="flex-1 w-full flex flex-col gap-2 items-center">
-                  <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-                    <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-                      <div className="flex gap-5 items-center font-semibold">
-                        <Link href={"/"}>Beat last year</Link>
-                      </div>
-                      <HeaderAuth />
-                    </div>
-                  </nav>
-                  <div className="w-full max-w-5xl flex flex-col gap-2 p-4">
-                    {children}
-                  </div>
-                </div>
+              <main className="min-h-screen">
+                {children}
               </main>
               <SpeedInsights />
               <Toaster />

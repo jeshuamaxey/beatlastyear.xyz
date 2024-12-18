@@ -18,6 +18,10 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        display: ['var(--font-rubic-mono-one)'],
+        sans: ['var(--font-host-grotesk)', 'sans'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
