@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 const OopsPage = () => {
-  return <div className="text-center space-y-4">
+  return <div className="text-center space-y-4 mx-auto">
     <h3 className="text-3xl">Something went wrong</h3>
     <p className="">Oops! Sorry about that. Let&apos; get you back on track.</p>
     <Button asChild>
