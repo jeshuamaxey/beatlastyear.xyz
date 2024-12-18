@@ -24,8 +24,6 @@ const BarChart = () => {
   const times = timesQuery.data!.data!
   const profile = profileQuery.data!.data!
 
-  console.log({profile})
-
   const yearMin = times[0].year
   const yearMax = times[times.length-1].year
 

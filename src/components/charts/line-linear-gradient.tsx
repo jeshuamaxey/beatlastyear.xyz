@@ -22,7 +22,7 @@ import { formatTime } from "@/lib/utils"
 const chartConfig = {
   pbs: {
     label: "pbs",
-    color: "hsl(var(--chart-4))",
+    color: "hsl(var(--chart-3))",
   },
 } satisfies ChartConfig
 
