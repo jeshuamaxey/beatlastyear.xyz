@@ -2,6 +2,10 @@ import SiteNav from "@/components/site-nav";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
+import { LineLinearGradientChart } from "@/components/charts/line-linear-gradient";
+import { Card } from "@/components/ui/card";
+import { Database } from "@/utils/supabase/database.types";
+import { BarLinearGradientChart } from "@/components/charts/bar-linear-gradient";
 
 const SignUpButton = () => (
   <Button size="lg" asChild>
@@ -11,10 +15,36 @@ const SignUpButton = () => (
   </Button>
 )
 
+const finalYear = 2024
+const finalTime = 1635.88
+const improvementFactorYoY = 0.1
+
+const times: Database["public"]["Tables"]["times"]["Row"][] = [2024, 2023, 2022, 2021, 2020, 2019, 2018].map(year => {
+  const diff = finalYear - year
+  const time = Math.round(finalTime/Math.pow((1 - improvementFactorYoY), diff))
+
+  return {
+    data_source: "strava",
+    date: `01-01-${year}`,
+    distance: "5km",
+    id: 1,
+    profile_id: "abc",
+    sport: "running",
+    strava_activity_id: "123",
+    time: time,
+    year: year
+  }
+})
+
 export default async function Index() {
   return (
     <div className="flex flex-col">
-      <section className="h-svh max-h-svh w-full bg-gradient-to-b from-background from-15% to-green-950 flex flex-col items-center">
+      <section className={`
+        h-svh max-h-svh w-full
+        bg-gradient-to-b from-background from-15% to-amber-100
+        dark:bg-gradient-to-b dark:from-background dark:to-yellow-950
+        flex flex-col items-center
+        `}>
         <SiteNav />
 
         <div className="w-full max-w-5xl flex flex-col flex-1 py-8 md:py-24 px-4">
@@ -33,13 +63,24 @@ export default async function Index() {
           </div>
 
           <div className="flex-1 flex flex-col gap-6 my-6">
-            <h2> [ striking visual here ] </h2>
+          <Card className="w-full max-w-2xl bg-background/60">
+            <BarLinearGradientChart
+              title="Best 5k times"
+              description="Jame's 5k PBs from 2014 to 2024"
+              chartData={times}
+              />
+          </Card>
           </div>
         </div>
 
       </section>
 
-      <section className="h-svh max-h-svh w-full bg-gradient-to-b from-green-950 to-green-900 flex flex-col p-2 items-center justify-around">
+      <section className={`
+          h-svh max-h-svh w-full
+          bg-gradient-to-b from-amber-100 to-amber-200
+          dark:bg-gradient-to-b dark:from-yellow-950 dark:to-background
+          flex flex-col p-2 items-center justify-around
+        `}>
         <div className="flex flex-col gap-4 w-full max-w-5xl">
           <h2 className="font-display text-2xl mb-4 md:text-6xl p-2 leading-6">
             Celebrate personal best progression
@@ -66,7 +107,12 @@ export default async function Index() {
         </div>
       </section>
 
-      <section className="h-svh max-h-svh w-full bg-gradient-to-b from-green-900 to-green-950 flex flex-col p-2 items-center justify-around">
+      <section className={`
+          h-svh max-h-svh w-full
+          bg-gradient-to-b from-amber-200 to-amber-100
+          dark:bg-gradient-to-b dark:from-background dark:to-yellow-950
+          flex flex-col p-2 items-center justify-around
+        `}>
         <div className="h-full flex flex-col gap-4 w-full max-w-5xl">
           <h2 className="font-display text-2xl  my-4 md:text-6xl p-2">
             How it works
@@ -95,12 +141,17 @@ export default async function Index() {
         </div>
       </section>
 
-      <section className="h-svh max-h-svh w-full bg-gradient-to-b from-green-950 to-background flex flex-col py-12 px-2 items-center justify-around">
+      <section className={`
+        h-svh max-h-svh w-full
+        bg-gradient-to-b from-amber-100 to-background
+        dark:bg-gradient-to-b dark:from-yellow-950 dark:to-background
+        flex flex-col py-12 px-2 items-center justify-around
+        `}>
         <div className="h-full flex flex-col justify-center gap-4 w-full max-w-5xl">
           <div className="relative md:flex">
             <Image className="rounded-md md:w-1/2" src="/jm-ironman-finish-crop.jpg" alt="James McAulay crossing the finish line at an ironman event" width={1392} height={1392} />
 
-            <div className="absolute md:static bottom-0 w-full md:w-1/2 flex flex-col gap-2 justify-center py-4 px-2 md:px-6 bg-gradient-to-t from-slate-950 md:bg-none text-white">
+            <div className="absolute md:static bottom-0 w-full md:w-1/2 flex flex-col gap-2 justify-center py-4 px-2 md:px-6 bg-gradient-to-t from-slate-950 md:bg-none">
               <blockquote className="italic md:text-xl">
                 "Having a place I can track my long term progress and PB improvement has motivated me to improve in so many dimensions"
               </blockquote>
