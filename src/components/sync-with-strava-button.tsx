@@ -98,7 +98,7 @@ const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconne
 
   }, [supabase])
 
-  const classes = cn(["mb-4 bg-orange-600 hover:bg-orange-900", className])
+  const classes = cn(["mb-4 bg-orange-600 hover:bg-orange-600/80 text-white", className])
 
   if(myProfileQuery.isPending) {
     return <Button
@@ -135,7 +135,7 @@ const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconne
       router.push(`/api/strava/connect`)
     }}
     disabled={stravaMutation.isPending}
-    className={cn(["mb-4 bg-orange-600 hover:bg-orange-900", className])}
+    className={classes}
   >
     Connect Strava
   </Button>
@@ -155,13 +155,13 @@ const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconne
       `last synced ${formatDistance(new Date(profile.data.strava_profiles.last_synced_at), new Date(), { addSuffix: true })}` :
       `never synced`
 
-    const syncIndicator = <Badge className="animatied animate-pulse bg-orange-600">Syncing...</Badge>
+    const syncIndicator = <Badge color="orange" className="animatied animate-pulse">Syncing...</Badge>
 
     return <DropdownMenu>
       <DropdownMenuTrigger disabled={isSyncing}>
         <div className="flex gap-2">
           {isSyncing ? syncIndicator : (
-            <Badge className="bg-orange-600 hover:bg-orange-600/80">Strava connected</Badge>
+            <Badge color="orange">Strava connected</Badge>
           )}
         </div>
       </DropdownMenuTrigger>
@@ -172,14 +172,6 @@ const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconne
         <DropdownMenuLabel>{syncCopy}</DropdownMenuLabel>
       </DropdownMenuContent>
     </DropdownMenu>
-
-    // return <div className="flex flex-col gap-1">
-    //   <div className="flex gap-2">
-    //     {syncBtn}
-    //     {disconnectOption}
-    //   </div>
-    //   <p className="text-xs text-right">{syncCopy}</p>
-    // </div>
   } else {
     return connectBtn
   }

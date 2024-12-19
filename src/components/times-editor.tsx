@@ -19,7 +19,7 @@ const TimeRow = ({time}: { time: Database["public"]["Tables"]["times"]["Row"]}) 
   return <TableRow>
     <TableCell>{time.year}</TableCell>
     <TableCell className="font-mono">{formatTime(time.time)}</TableCell>
-    <TableCell><Badge className={`capitalize ${time.data_source === "strava" ? "bg-orange-600" : ""}`}>{time.data_source}</Badge></TableCell>
+    <TableCell><Badge className="capitalize" color={`${time.data_source === "strava" ? "orange" : "default"}`}>{time.data_source}</Badge></TableCell>
     <TableCell>
       {time.data_source === "manual" &&  <EditTimeDialog mode="edit" defaults={time} />}
     </TableCell>
