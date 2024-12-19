@@ -47,7 +47,7 @@ export function LineLinearGradientChart({ title, description, chartData }: LineL
     return (longestTime*scaleFactor) - plottableTime
   }
 
-  const plottingData = chartData.map(timeToPlottableTime).sort((a, b) => b.year - a.year)
+  const plottingData = chartData.map(timeToPlottableTime).sort((a, b) => a.year - b.year)
 
   const formatYAxis = (value: number) => {
     return formatTime(plottableTimeToTime(value))
