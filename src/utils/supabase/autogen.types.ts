@@ -52,6 +52,35 @@ export type Database = {
         }
         Relationships: []
       }
+      strava_activities: {
+        Row: {
+          activity_json: Json | null
+          activity_summary_json: Json | null
+          id: number
+          profile_id: string
+        }
+        Insert: {
+          activity_json?: Json | null
+          activity_summary_json?: Json | null
+          id: number
+          profile_id: string
+        }
+        Update: {
+          activity_json?: Json | null
+          activity_summary_json?: Json | null
+          id?: number
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "strava_activities_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       strava_profiles: {
         Row: {
           athlete_profile: Json | null

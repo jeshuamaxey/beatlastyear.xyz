@@ -8,7 +8,7 @@ const functionId = "sync-strava-data"
 export const syncStravaData = inngest.createFunction(
   { id:  functionId },
   { event: "strava/sync" },
-  async ({ event, step }) => {
+  async ({ event, logger, step }) => {
     const userId = event.data.userId
 
     if(!userId) {
@@ -17,9 +17,8 @@ export const syncStravaData = inngest.createFunction(
 
     // create supabase client
     const supabase = await createAdminClient()
-    
-    // get data from strava
-    const fastest5Ks = await step.run("fetch-strava-activity-data", async () => {
+
+    const accessToken = await step.run("get-strava-access-token", async () => {
       const { data, error } = await supabase.from('strava_profiles')
         .select('refresh_token')
         .eq('profile_id', userId)
@@ -31,19 +30,63 @@ export const syncStravaData = inngest.createFunction(
         if(error) console.error(error.message)
         throw new Error(error?.message || msg)
       }
-      const refreshToken = data.refresh_token
 
-      const accessToken = await StravaAPI.getAuthToken(refreshToken);
-      // Fetch activities
-      const activities = await StravaAPI.fetchAllActivities(accessToken);
-      // Analyze fastest 5Ks
-      const fastest5Ks = StravaAPI.analyzeFastest5KPerYear(activities);
+      const accessToken = await StravaAPI.getAuthToken(data.refresh_token);
 
-      return fastest5Ks
+      return accessToken
+    })
+    
+    // get data from strava
+    const allActivities: any[] = []
+    let page = 1
+    let moreAvailable = true
+
+    logger.info(`strava activity loop starts. page = ${page}`)
+
+    while(moreAvailable) {
+      const activities = await step.run(`fetch-strava-activity-page-${page}`, async () => {
+        // Fetch activities
+        return await StravaAPI.fetchActivities(accessToken, page);
+      })
+
+      if(activities.length > 0) {
+        allActivities.push(...activities)
+        page++;
+        logger.info(`strava activity loop continues. page = ${page}`)
+      } else {
+        moreAvailable = false
+        logger.info(`strava activity loop ends. page = ${page}`)
+      }
+    }
+
+    await step.run("store-strava-activities-in-supabase", async () => {
+      const activitiesToInsert : Database["public"]["Tables"]["strava_activities"]["Insert"][] = allActivities.map((act) => ({
+        profile_id: userId,
+        id: act.id,
+        activity_summary_json: act
+      }))
+  
+      const { error } = await supabase.from("strava_activities").upsert(
+        activitiesToInsert
+      );
+  
+      if (error) throw error;
     })
 
+    
     // process and upload to supabase
     await step.run("store-strava-times-in-supabase", async () => {
+      const { data, error: selectErr } = await supabase.from("strava_activities").select("*")
+
+      if(selectErr) {
+        logger.error(selectErr)
+        throw new Error(selectErr.message)
+      }
+
+      const activities = data.map(a => a.activity_summary_json)
+
+      const fastest5Ks = StravaAPI.analyzeFastest5KPerYear(activities)
+
       const timesToInsert: Database["public"]["Tables"]["times"]["Insert"][] = fastest5Ks.map((run) => ({
         profile_id: userId,
         year: run.year,
@@ -65,6 +108,10 @@ export const syncStravaData = inngest.createFunction(
   
       if (error) throw error;
 
+      return { fastest5Ks };
+    })
+
+    await step.run("reset-strava-profile-sync-status", async () => {
       await supabase.from('strava_profiles')
         .update({
           sync_status: "IDLE",
@@ -72,8 +119,6 @@ export const syncStravaData = inngest.createFunction(
         })
         .eq('profile_id', userId)
     })
-
-    return { fastest5Ks };
   },
 );
 

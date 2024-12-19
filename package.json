@@ -5,6 +5,7 @@
     "build": "next build",
     "start": "next start",
     "inngest": "npx inngest-cli@latest dev",
+    "sb:restart": "npx supabase stop && npx supabase start",
     "types": "npx supabase gen types --local > src/utils/supabase/autogen.types.ts"
   },
   "dependencies": {

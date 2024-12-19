@@ -36,6 +36,32 @@ export class StravaAPI {
     return data.access_token;
   }
 
+  static async fetchActivities(accessToken: string, page: number): Promise<any[]> {
+    const after = new Date("2022-01-01").getTime() / 1000; // Unix timestamp for Jan 1, 2022
+
+    console.log(`Fetching page ${page} of activities...`);
+    const response = await fetch(
+      `${StravaAPI.ACTIVITIES_URL}?page=${page}&per_page=200&after=${after}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      const err = await response.json();
+      console.error(err)
+      throw new Error("Failed to fetch activities");
+    }
+
+    const activities = await response.json();
+
+    console.log(`New activities fetched: ${activities.length}`)
+
+    return activities;
+  }
+
   static async fetchAllActivities(accessToken: string): Promise<any[]> {
     let page = 1;
     let allActivities: any[] = [];
