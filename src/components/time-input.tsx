@@ -44,7 +44,7 @@ const TimeInput = ({ defaultValue, onChange }: TimeInputProps) => {
 
   return <div className="flex gap-2">
     <Input ref={mmRef} onChange={handeChange} required defaultValue={defaultMM} placeholder="mm" name="time_mm"  type="number" />
-    <Input ref={ssRef} max="59" onChange={handeChange} required defaultValue={defaultSS} placeholder="ss" name="time_ss" type="number" />
+    <Input ref={ssRef} max="59" step="0.01" onChange={handeChange} required defaultValue={defaultSS} placeholder="ss" name="time_ss" type="number" />
   </div>
 }
 

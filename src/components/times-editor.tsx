@@ -13,15 +13,13 @@ import SyncWithStravaButton from './sync-with-strava-button';
 import { Badge } from './ui/badge';
 import { useToast } from '@/hooks/use-toast';
 
-type TimeInsert = Database["public"]["Tables"]["times"]["Insert"]
-
 const TimeRow = ({time}: { time: Database["public"]["Tables"]["times"]["Row"]}) => {
   return <TableRow>
     <TableCell>{time.year}</TableCell>
     <TableCell className="font-mono">{formatTime(time.time)}</TableCell>
     <TableCell><Badge className="capitalize" color={`${time.data_source === "strava" ? "orange" : "default"}`}>{time.data_source}</Badge></TableCell>
     <TableCell>
-      {time.data_source === "manual" &&  <EditTimeDialog mode="edit" defaults={time} />}
+      <EditTimeDialog mode="edit" defaults={time} />
     </TableCell>
   </TableRow>
 }

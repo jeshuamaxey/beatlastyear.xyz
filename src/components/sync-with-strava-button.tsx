@@ -12,6 +12,7 @@ import { formatDistance } from "date-fns"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { Badge } from "./ui/badge"
 import posthog from "posthog-js"
+import Image from "next/image"
 
 type TimeInsert = Database["public"]["Tables"]["times"]["Insert"]
 type StravaProfile = Database["public"]["Tables"]["strava_profiles"]["Row"]
@@ -129,16 +130,19 @@ const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconne
     {isSyncing ? "Syncing..." : "Sync now"}
   </DropdownMenuItem>
 
-  const connectBtn = <Button
+  const connectBtn = <Image
+    src="/strava-button.svg"
+    alt="Connect with Strava"
+    width={193}
+    height={18}
     onClick={() => {
+      if(stravaMutation.isPending) return
+
       posthog.capture('strava-connect-requested')
       router.push(`/api/strava/connect`)
     }}
-    disabled={stravaMutation.isPending}
-    className={classes}
-  >
-    Connect Strava
-  </Button>
+    className="cursor-pointer relative top-0 active:top-1 hover:opacity-90"
+  />
 
   const disconnectOption = <DropdownMenuItem
     onClick={() => {
