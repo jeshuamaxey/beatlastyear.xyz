@@ -1,7 +1,8 @@
-import { StravaAuthTokenResponse, StravaAuthTokenResponseError, StravaAuthTokenResponseSuccess } from "@/app/api/strava/types";
+import { StravaAuthTokenResponseError, StravaAuthTokenResponseSuccess } from "@/app/api/strava/types";
 
 // lib/strava.ts
 export class StravaAPI {
+  private static AFTER = "2000-01-01"
   private static AUTH_URL = "https://www.strava.com/oauth/token";
   private static ACTIVITIES_URL =
     "https://www.strava.com/api/v3/athlete/activities";
@@ -37,7 +38,7 @@ export class StravaAPI {
   }
 
   static async fetchActivities(accessToken: string, page: number): Promise<any[]> {
-    const after = new Date("2022-01-01").getTime() / 1000; // Unix timestamp for Jan 1, 2022
+    const after = new Date(StravaAPI.AFTER).getTime() / 1000; // Unix timestamp for Jan 1, 2022
 
     console.log(`Fetching page ${page} of activities...`);
     const response = await fetch(
@@ -65,7 +66,7 @@ export class StravaAPI {
   static async fetchAllActivities(accessToken: string): Promise<any[]> {
     let page = 1;
     let allActivities: any[] = [];
-    const after = new Date("2022-01-01").getTime() / 1000; // Unix timestamp for Jan 1, 2022
+    const after = new Date(StravaAPI.AFTER).getTime() / 1000; // Unix timestamp for Jan 1, 2022
 
     while (true) {
       console.log(`Fetching page ${page} of activities...`);
