@@ -16,7 +16,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { Database } from "@/utils/supabase/autogen.types"
+import { Database } from "@/utils/supabase/database.types"
 import { formatTime } from "@/lib/utils"
 
 const chartConfig = {

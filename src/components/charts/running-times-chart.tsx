@@ -1,6 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Database } from "@/utils/supabase/autogen.types";
+import { Database } from "@/utils/supabase/database.types";
 
 const RunningTimesChart = ({data} : { data: Database["public"]["Tables"]["times"]["Row"][]}) => {
   // Transform the data

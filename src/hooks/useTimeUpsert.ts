@@ -1,4 +1,4 @@
-import { Database } from "@/utils/supabase/autogen.types";
+import { Database } from "@/utils/supabase/database.types";
 import { createClient } from "@/utils/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 

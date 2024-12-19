@@ -1,4 +1,4 @@
-import { Database } from "@/utils/supabase/autogen.types";
+import { Database } from "@/utils/supabase/database.types";
 import { inngest } from "../client";
 import { StravaAPI } from "@/lib/strava";
 import { createAdminClient } from "../utils/supabase";
