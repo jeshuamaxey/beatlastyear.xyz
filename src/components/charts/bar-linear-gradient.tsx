@@ -49,7 +49,7 @@ export function BarLinearGradientChart({ title, description, chartData }: BarLin
     return (longestTime*scaleFactor) - plottableTime
   }
 
-  const plottingData = chartData.map(timeToPlottableTime).reverse()
+  const plottingData = chartData.map(timeToPlottableTime).sort((a, b) => b.year - a.year)
 
   const formatYAxis = (value: number) => {
     return formatTime(plottableTimeToTime(value))
