@@ -2,7 +2,6 @@ import SiteNav from "@/components/site-nav";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { LineLinearGradientChart } from "@/components/charts/line-linear-gradient";
 import { Card } from "@/components/ui/card";
 import { Database } from "@/utils/supabase/database.types";
 import { BarLinearGradientChart } from "@/components/charts/bar-linear-gradient";
@@ -51,8 +50,7 @@ export default async function Index() {
           <div className="flex-1 flex flex-col gap-6 md:gap-12">
             <h1 className="font-display text-2xl mb-4 md:text-6xl">BEAT LAST YEAR</h1>
             <h2 className="font-display text-2xl mb-2 md:text-4xl">
-              Celebrate Your Progress<br/>
-              Share Your Pride
+              Visualise the journey<br/> to a faster you
             </h2>
             <div className="flex flex-col gap-2">
               <div className="flex">
@@ -86,19 +84,28 @@ export default async function Index() {
             Celebrate personal best progression
           </h2>
           
-          <div className="bg-gradient-to-b from-yellow-300 to-yellow-400 -skew-y-[4deg] h-44 flex flex-col rounded-lg justify-around p-4">
+          <div className="bg-gradient-to-b from-yellow-300 to-yellow-400 -skew-y-[0deg] md:h-44 flex flex-row rounded-lg gap-4 md:gap-8 justify-start items-center p-4 md:p-8">
+            <div className="aspect-square h-24 flex-0 flex items-center justify-center">
+              <p className="text-8xl md:text-9xl -mt-8">🗻</p>
+            </div>
             <div className="skew-y-[0deg]">
               <h3 className="font-display">Focused on Growth</h3>
               <p>Running is a journey. Beat Last Year celebrates your long-term progress, not just your latest race.</p>
             </div>
           </div>
-          <div className="bg-gradient-to-b from-yellow-400 to-yellow-500 -skew-y-[4deg] h-44 flex flex-col rounded-lg justify-around p-4">
+          <div className="bg-gradient-to-b from-yellow-400 to-yellow-500 -skew-y-[0deg] h-44 flex flex-row rounded-lg gap-4 md:gap-8 justify-start items-center p-4 md:p-8">
+            <div className="aspect-square h-24 flex-0 flex items-center justify-center">
+              <Image className="w-full aspect-square" src="/strava-app-icon.png" alt="strava app icon" height={512} width={512} />
+            </div>
             <div className="skew-y-[0deg]">
               <h3 className="font-display">Effortless integration</h3>
               <p>Connect with Strava or input your personal bests manually.</p>
             </div>
           </div>
-          <div className="bg-gradient-to-b from-yellow-500 to-yellow-600 -skew-y-[4deg] h-44 flex flex-col rounded-lg justify-around p-4">
+          <div className="bg-gradient-to-b from-yellow-500 to-yellow-600 -skew-y-[0deg] h-44 flex flex-row rounded-lg gap-4 md:gap-8 justify-start items-center p-4 md:p-8">
+            <div className="aspect-square h-24 flex-0 flex items-center justify-center">
+              <Image className="w-full aspect-square" src="/instagram-logo.png" alt="instagram logo" height={1200} width={1200} />
+            </div>
             <div className="skew-y-[0deg]">
               <h3 className="font-display">Show Off With Style</h3>
               <p>Generate stunning graphics that motivate you—and inspire your friends.</p>
