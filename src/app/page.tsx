@@ -167,7 +167,12 @@ export default async function Index() {
         </div>
       </section>
 
-      <footer className="h-16 w-full bg-background flex flex-col p-12 items-center">
+      <footer className="w-full bg-background flex flex-col gap-8 p-8 items-center">
+        <div className="h-full flex flex-row justify-center gap-4 w-full text-foreground text-center">
+          <Link className="underline underline-offset-0 hover:underline-offset-2" href="/legal/tos">Terms of Service</Link>
+          <Link className="underline underline-offset-0 hover:underline-offset-2" href="/legal/privacy">Privacy Policy</Link>
+        </div>
+
         <div className="h-full flex flex-col justify-end gap-4 w-full max-w-5xl text-foreground text-center">
           <p>&copy; Beat Last Year {new Date().getFullYear()}</p>
         </div>

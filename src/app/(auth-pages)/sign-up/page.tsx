@@ -49,6 +49,11 @@ export default async function Signup(props: {
         <SubmitButton formAction={signUpAction} pendingText="Signing up...">
           Sign up
         </SubmitButton>
+
+        <p className="my-4 text-sm">
+          By signing up you agree to our <Link className="underline underline-offset-0 hover:underline-offset-2" href="/legal/tos">terms of service</Link>. You can view our <Link className="underline underline-offset-0 hover:underline-offset-2" href="/legal/privacy">privacy policy here</Link>
+        </p>
+
         <FormMessage message={searchParams} />
       </div>
     </form>
