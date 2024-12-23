@@ -5,12 +5,17 @@ import { createClient } from "@/utils/supabase/server";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { notFound } from "next/navigation";
 
-export default async function ProtectedPage({params}: {params: {slug: string}}) {
+export default async function ProtectedPage({params}: {params: Promise<{slug: string}>}) {
   const supabase = await createClient();
+  const { slug } = await params
 
-  const {data: profile, error: profileError} = await supabase.from('profiles').select('*').eq('slug', params.slug).single()
+  const {data: profile, error: profileError} = await supabase.from('profiles').select('*').eq('slug', slug).single()
 
   if(profileError) {
+    console.log({
+      profileError,
+      slug
+    })
     return notFound()
   }
 
