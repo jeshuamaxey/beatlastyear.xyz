@@ -12,6 +12,7 @@ import { TableCell } from './ui/table';
 import SyncWithStravaButton from './sync-with-strava-button';
 import { Badge } from './ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import useMyTimesQuery from '@/hooks/use-my-times-query';
 
 const TimeRow = ({time}: { time: Database["public"]["Tables"]["times"]["Row"]}) => {
   return <TableRow>
@@ -26,7 +27,7 @@ const TimeRow = ({time}: { time: Database["public"]["Tables"]["times"]["Row"]}) 
 
 const TimesEditor = () => {
   const { toast } = useToast()
-  const timesQuery = useTimesQuery()
+  const timesQuery = useMyTimesQuery()
   
   if(timesQuery.isLoading) {
     return <p>Loading</p>
