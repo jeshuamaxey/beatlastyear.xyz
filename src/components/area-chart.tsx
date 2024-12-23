@@ -4,28 +4,16 @@ import React from 'react';
 
 import { LineLinearGradientChart } from "./charts/line-linear-gradient";
 import { Card } from "./ui/card";
-import useTimesQuery from "@/hooks/useTimesQuery";
-import useMyProfileQuery from '@/hooks/useMyProfileQuery';
+// import useTimesQuery from "@/hooks/useTimesQuery";
+// import useMyProfileQuery from '@/hooks/useMyProfileQuery';
+import { Database } from '@/utils/supabase/database.types';
 
-const AreaChart = () => {
-  const timesQuery = useTimesQuery()
-  const profileQuery = useMyProfileQuery()
+type AreaChartProps = {
+  times: Database['public']['Tables']['times']['Row'][]
+  profile: Database['public']['Tables']['profiles']['Row']
+}
 
-  const isLoading = profileQuery.isLoading || timesQuery.isLoading
-  const isError = profileQuery.isError || timesQuery.isError
-
-  if(isLoading) {
-    return <p>Loading</p>
-  }
-  if(isError) {
-    return <p>Something went wrong</p>
-  }
-
-  const times = timesQuery.data!.data!
-  const profile = profileQuery.data!.data!
-
-  console.log({profile})
-
+const AreaChart = ({ times, profile }: AreaChartProps) => {
   const yearMin = times[0].year
   const yearMax = times[times.length-1].year
 

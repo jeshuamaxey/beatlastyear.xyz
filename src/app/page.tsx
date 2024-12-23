@@ -159,7 +159,7 @@ export default async function Index() {
             <Image className="rounded-md md:w-1/2" src="/jm-ironman-finish-crop.jpg" alt="James McAulay crossing the finish line at an ironman event" width={1392} height={1392} />
 
             <div className="absolute md:static bottom-0 w-full md:w-1/2 flex flex-col gap-2 justify-center py-4 px-2 md:px-6 bg-gradient-to-t from-slate-950 md:bg-none">
-              <blockquote className="italic md:text-xl">
+              <blockquote className="italic text-white md:text-foreground md:text-xl">
                 "Having a place I can track my long term progress and PB improvement has motivated me to improve in so many dimensions"
               </blockquote>
               <p>James McAulay</p>

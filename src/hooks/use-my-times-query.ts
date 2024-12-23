@@ -1,14 +1,21 @@
 import { createClient } from "@/utils/supabase/client"
-import { User } from "@supabase/supabase-js"
 import { useQuery } from "@tanstack/react-query"
 
-const useTimesQuery = (profileId: User["id"]) => {
+const useMyTimesQuery = async () => {
   const supabase = createClient()
+
+  const { data, error } = await supabase.auth.getUser()
+
+  if(error) {
+    throw new Error(error.message)
+  }
+
+  const userId = data.user.id
 
   const timesQuery = useQuery({
     queryFn: async () => await supabase.from('times')
       .select(`*`)
-      .eq('id', profileId)
+      .eq('profile_id', userId)
       .order('year', { ascending: true }),
     queryKey: ['times']
   })
@@ -16,4 +23,4 @@ const useTimesQuery = (profileId: User["id"]) => {
   return timesQuery
 }
 
-export default useTimesQuery;
+export default useMyTimesQuery;

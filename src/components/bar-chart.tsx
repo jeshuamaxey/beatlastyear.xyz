@@ -6,24 +6,14 @@ import { Card } from "./ui/card";
 import useTimesQuery from "@/hooks/useTimesQuery";
 import useMyProfileQuery from '@/hooks/useMyProfileQuery';
 import { BarLinearGradientChart } from './charts/bar-linear-gradient';
+import { Database } from '@/utils/supabase/database.types';
 
-const BarChart = () => {
-  const timesQuery = useTimesQuery()
-  const profileQuery = useMyProfileQuery()
+type BarChartProps = {
+  times: Database['public']['Tables']['times']['Row'][]
+  profile: Database['public']['Tables']['profiles']['Row']
+}
 
-  const isLoading = profileQuery.isLoading || timesQuery.isLoading
-  const isError = profileQuery.isError || timesQuery.isError
-
-  if(isLoading) {
-    return <p>Loading</p>
-  }
-  if(isError) {
-    return <p>Something went wrong</p>
-  }
-
-  const times = timesQuery.data!.data!
-  const profile = profileQuery.data!.data!
-
+const BarChart = ({ times, profile }: BarChartProps) => {
   const yearMin = times[0].year
   const yearMax = times[times.length-1].year
 

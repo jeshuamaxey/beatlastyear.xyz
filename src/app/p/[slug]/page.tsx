@@ -3,17 +3,21 @@ import BarChart from "@/components/bar-chart";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createClient } from "@/utils/supabase/server";
 import { TabsContent } from "@radix-ui/react-tabs";
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
-export default async function ProtectedPage() {
+export default async function ProtectedPage({params}: {params: {slug: string}}) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const {data: profile, error: profileError} = await supabase.from('profiles').select('*').eq('slug', params.slug).single()
 
-  if (!user) {
-    return redirect("/sign-in");
+  if(profileError) {
+    return notFound()
+  }
+
+  const {data: times, error: timesError} = await supabase.from('times').select('*').eq('profile_id', profile.id)
+
+  if(timesError || times.length === 0) {
+    return <p className="text-center text-lg">This profile has no times yet</p>
   }
 
   return (
@@ -24,10 +28,10 @@ export default async function ProtectedPage() {
           <TabsTrigger value="barchart">Bar chart</TabsTrigger>
         </TabsList>
         <TabsContent value="areachart">
-          <AreaChart />
+          <AreaChart times={times} profile={profile} />
         </TabsContent>
         <TabsContent value="barchart">
-          <BarChart />
+          <BarChart times={times} profile={profile}/>
         </TabsContent>
       </Tabs>
     </div>
