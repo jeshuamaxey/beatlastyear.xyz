@@ -73,7 +73,7 @@ const TimesEditor = () => {
     <div className="flex items-center justify-between">
       <div className="flex gap-8 items-center">
         <h3 className="font-bold text-xl pl-2">My times</h3>
-        <ToggleGroup type="single">
+        <ToggleGroup value={distanceFilter} type="single">
           {DISTANCES.map(distance => <ToggleGroupItem
               value={distance}
               key={distance}
@@ -83,23 +83,6 @@ const TimesEditor = () => {
             </ToggleGroupItem>
           )}
         </ToggleGroup>
-
-        <div className="flex gap-2">
-          <Button
-            onClick={() => setDistanceFilter("5km")}
-            size="sm"
-            variant={distanceFilter === "5km" ? "default" : "outline"}
-            >
-            5km
-          </Button>
-          <Button
-            onClick={() => setDistanceFilter("10km")}
-            size="sm"
-            variant={distanceFilter === "10km" ? "default" : "outline"}
-            >
-            10km
-          </Button>
-        </div>
       </div>
 
       <SyncWithStravaButton
