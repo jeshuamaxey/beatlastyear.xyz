@@ -10,5 +10,9 @@ export function formatTime(time: number) {
   const ss = String(Math.round(time % 60)).padStart(2, '0')
   const mm = Math.round((time - secs)/60)
 
+  if(ss === '60') {
+    return `${mm+1}:00`
+  }
+
   return `${mm}:${ss}`
 }

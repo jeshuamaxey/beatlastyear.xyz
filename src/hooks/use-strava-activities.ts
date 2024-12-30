@@ -18,6 +18,9 @@ const useStravaActivitiesQuery = (supabase: SupabaseClient<Database>) => {
         .eq('profile_id', user!.id);
       
       if (error) throw new Error(error.message);
+
+      data.sort((a, b) => new Date(b.activity_summary_json.start_date).getTime() - new Date(a.activity_summary_json.start_date).getTime())
+
       return data;
     }
   })
