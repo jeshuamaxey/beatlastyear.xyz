@@ -1,12 +1,13 @@
 "use client"
 
+import { useState } from 'react'
 import { Database } from '@/utils/supabase/autogen.types';
 import { Button } from './ui/button';
 import Link from 'next/link';
-import useTimesQuery from '@/hooks/useTimesQuery';
 import EditTimeDialog from './edit-time-dialog';
 import { ArrowRight } from 'lucide-react';
 import { formatTime } from '@/lib/utils';
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { TableBody, TableHead, TableHeader, TableRow, Table } from './ui/table';
 import { TableCell } from './ui/table';
 import SyncWithStravaButton from './sync-with-strava-button';
@@ -18,6 +19,7 @@ const TimeRow = ({time}: { time: Database["public"]["Tables"]["times"]["Row"]}) 
   return <TableRow>
     <TableCell>{time.year}</TableCell>
     <TableCell className="font-mono">{formatTime(time.time)}</TableCell>
+    <TableCell>{time.distance}</TableCell>
     <TableCell><Badge className="capitalize" color={`${time.data_source === "strava" ? "orange" : "default"}`}>{time.data_source}</Badge></TableCell>
     <TableCell>
       <EditTimeDialog mode="edit" defaults={time} />
@@ -25,9 +27,13 @@ const TimeRow = ({time}: { time: Database["public"]["Tables"]["times"]["Row"]}) 
   </TableRow>
 }
 
+type Distance = Database["public"]["Enums"]["distance"]
+
 const TimesEditor = () => {
   const { toast } = useToast()
   const timesQuery = useMyTimesQuery()
+  const DISTANCES: Distance[] = ["5km", "10km"]
+  const [distanceFilter, setDistanceFilter] = useState<Distance>("5km")
   
   if(timesQuery.isLoading) {
     return <p>Loading</p>
@@ -65,11 +71,42 @@ const TimesEditor = () => {
 
   return <div className="flex flex-col gap-4">
     <div className="flex items-center justify-between">
-      <h3 className="font-bold text-xl pl-2">My times</h3>
+      <div className="flex gap-8 items-center">
+        <h3 className="font-bold text-xl pl-2">My times</h3>
+        <ToggleGroup type="single">
+          {DISTANCES.map(distance => <ToggleGroupItem
+              value={distance}
+              key={distance}
+              onClick={() => setDistanceFilter(distance)}
+            >
+              {distance}
+            </ToggleGroupItem>
+          )}
+        </ToggleGroup>
+
+        <div className="flex gap-2">
+          <Button
+            onClick={() => setDistanceFilter("5km")}
+            size="sm"
+            variant={distanceFilter === "5km" ? "default" : "outline"}
+            >
+            5km
+          </Button>
+          <Button
+            onClick={() => setDistanceFilter("10km")}
+            size="sm"
+            variant={distanceFilter === "10km" ? "default" : "outline"}
+            >
+            10km
+          </Button>
+        </div>
+      </div>
+
       <SyncWithStravaButton
         onSyncStart={handleStravaSyncStart}
         onSyncSuccess={handleStravaSyncSuccess}
         onDisconnectSuccess={handleStravaDisconnectSuccess} className="mb-0" />
+
     </div>
 
     {times.length > 0 ? (
@@ -79,12 +116,13 @@ const TimesEditor = () => {
             <TableRow>
               <TableHead className="w-[100px]">Year</TableHead>
               <TableHead>Time</TableHead>
+              <TableHead>Distance</TableHead>
               <TableHead>Source</TableHead>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {times.map((time) => <TimeRow key={time.id} time={time} /> )}
+            {times.filter(t => t.distance === distanceFilter).map((time) => <TimeRow key={time.id} time={time} /> )}
           </TableBody>
         </Table>
       </div>
@@ -101,8 +139,7 @@ const TimesEditor = () => {
         <Link href={`/p/me`}>see chart <ArrowRight /></Link>
       </Button>
     </div>
-    
-    {/* </CardContent> */}
+
   </div>
 }
 

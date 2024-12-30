@@ -102,8 +102,16 @@ export class StravaAPI {
   static is5KRun(activity: any): boolean {
     return (
       activity.type === "Run" &&
-      activity.distance >= 4980 && // 4.98km
+      activity.distance >= 5000 && // 5.00km
       activity.distance <= 5200 // 5.2km
+    );
+  }
+
+  static is10KRun(activity: any): boolean {
+    return (
+      activity.type === "Run" &&
+      activity.distance >= 10000 && // 10km
+      activity.distance <= 10200 // 10.2km
     );
   }
 
@@ -119,7 +127,7 @@ export class StravaAPI {
       average_speed: activity.average_speed,
     }));
 
-    console.log(`Found ${runs5K.length} 5K runs to analyze`);
+    console.log(`Found ${runs5K.length} 5km runs to analyze`);
 
     // Group by year and find fastest
     const yearlyBests = new Map();
@@ -138,6 +146,46 @@ export class StravaAPI {
           date: run.date.toISOString().split("T")[0],
           time: scaled5KTime,
           pace: scaled5KTime / 5, // pace per km
+          activity_id: run.activity_id,
+          actual_distance: Math.round(run.distance),
+        });
+      }
+    });
+
+    return Array.from(yearlyBests.values()).sort((a, b) => b.year - a.year);
+  }
+
+  static analyzeFastest10KPerYear(activities: any[]): any[] {
+    console.log("Starting analysis of activities");
+
+    // Filter 10K runs
+    const runs10K = activities.filter(this.is10KRun).map((activity) => ({
+      date: new Date(activity.start_date_local),
+      time: activity.moving_time,
+      distance: activity.distance,
+      activity_id: activity.id,
+      average_speed: activity.average_speed,
+    }));
+
+    console.log(`Found ${runs10K.length} 10km runs to analyze`);
+
+    // Group by year and find fastest
+    const yearlyBests = new Map();
+
+    runs10K.forEach((run) => {
+      const year = run.date.getFullYear();
+      const existing = yearlyBests.get(year);
+
+      // Calculate 10K time by scaling the moving time to exactly 10000m
+      console.warn("check this logic is sound with james")
+      const scaled10KTime = (10000 * run.time) / run.distance;
+
+      if (!existing || scaled10KTime < existing.time) {
+        yearlyBests.set(year, {
+          year,
+          date: run.date.toISOString().split("T")[0],
+          time: scaled10KTime,
+          pace: scaled10KTime / 10, // pace per km
           activity_id: run.activity_id,
           actual_distance: Math.round(run.distance),
         });
