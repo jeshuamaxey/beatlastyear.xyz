@@ -1,11 +1,23 @@
+create type distance as enum (
+  '100m',
+  '200m',
+  '400m',
+  '800m',
+  '1500m',
+  '1mi',
+  '5km',
+  '10km',
+  'half-marathon',
+  'marathon'
+);
+
 create table public.times (
   id serial primary key,
   profile_id uuid not null references public.profiles(id) on delete cascade,
   time numeric(8, 2) not null,
-  distance text check (distance in ('100m', '200m', '400m', '800m', '1500m', '5km', '1k0m', 'half-marathon', 'marathon')),
+  distance distance not null,
   sport text check (sport in ('running')),
   year integer not null,
-
   data_source text check (data_source in ('manual', 'strava')),
   date date,
   strava_activity_id text,

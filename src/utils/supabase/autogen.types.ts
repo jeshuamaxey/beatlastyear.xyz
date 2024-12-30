@@ -39,16 +39,19 @@ export type Database = {
           id: string
           name: string | null
           onboarded: boolean | null
+          slug: string | null
         }
         Insert: {
           id: string
           name?: string | null
           onboarded?: boolean | null
+          slug?: string | null
         }
         Update: {
           id?: string
           name?: string | null
           onboarded?: boolean | null
+          slug?: string | null
         }
         Relationships: []
       }
@@ -117,7 +120,7 @@ export type Database = {
         Row: {
           data_source: string | null
           date: string | null
-          distance: string | null
+          distance: Database["public"]["Enums"]["distance"]
           id: number
           profile_id: string
           sport: string | null
@@ -128,7 +131,7 @@ export type Database = {
         Insert: {
           data_source?: string | null
           date?: string | null
-          distance?: string | null
+          distance: Database["public"]["Enums"]["distance"]
           id?: number
           profile_id: string
           sport?: string | null
@@ -139,7 +142,7 @@ export type Database = {
         Update: {
           data_source?: string | null
           date?: string | null
-          distance?: string | null
+          distance?: Database["public"]["Enums"]["distance"]
           id?: number
           profile_id?: string
           sport?: string | null
@@ -206,7 +209,17 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      distance:
+        | "100m"
+        | "200m"
+        | "400m"
+        | "800m"
+        | "1500m"
+        | "1mi"
+        | "5km"
+        | "10km"
+        | "half-marathon"
+        | "marathon"
     }
     CompositeTypes: {
       [_ in never]: never
