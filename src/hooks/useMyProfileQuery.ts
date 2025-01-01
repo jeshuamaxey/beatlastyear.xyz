@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/client"
 import { useQuery } from "@tanstack/react-query"
+import { PROFILE_SELECT } from "./use-profile-query"
 
 const useMyProfileQuery = () => {
   const supabase = createClient()
@@ -13,7 +14,7 @@ const useMyProfileQuery = () => {
       }
 
       return await supabase.from('profiles')
-        .select(`*, strava_profiles(athlete_profile, sync_status, last_synced_at)`)
+        .select(PROFILE_SELECT)
         .eq('id', user!.id)
         .single()
     },

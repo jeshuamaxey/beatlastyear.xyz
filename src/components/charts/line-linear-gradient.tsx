@@ -33,24 +33,63 @@ type LineLinearGradientChartProps = {
 }
 
 export function LineLinearGradientChart({ title, description, chartData }: LineLinearGradientChartProps) {
-  const longestTime = chartData.sort((a, b) => b.time - a.time)[0].time
+  const slowestTime = chartData.sort((a, b) => b.time - a.time)[0].time
+  const fastestTime = chartData.sort((a, b) => a.time - b.time)[0].time
   const scaleFactor = 1.2
 
-  const timeToPlottableTime = (time: LineLinearGradientChartProps["chartData"][0]) => {
+  const mapper = (time: LineLinearGradientChartProps["chartData"][0]) => {
     return {
       ...time,
-      plottableTime: (longestTime*scaleFactor) - time.time
+      plottableTime: timeToPlottableTime(time.time)
     }
   }
 
-  const plottableTimeToTime = (plottableTime: number) => {
-    return (longestTime*scaleFactor) - plottableTime
+  const timeToPlottableTime = (time: number) => {
+    return (slowestTime*scaleFactor) - time
   }
 
-  const plottingData = chartData.map(timeToPlottableTime).sort((a, b) => a.year - b.year)
+  const plottableTimeToTime = (plottableTime: number) => {
+    return (slowestTime*scaleFactor) - plottableTime
+  }
+
+  const roundToNearest = (value: number, nearest: number, direction: "up" | "down" = "up", buffer: number = 0) => {
+    if (direction === "up") {
+      return Math.ceil((value + buffer) / nearest) * nearest
+    } else {
+      return Math.floor((value - buffer) / nearest) * nearest
+    }
+  }
+
+  const plottingData = chartData.map(mapper).sort((a, b) => a.year - b.year)
+
+  const buffer = 10
+  const timeTicks = [
+    Math.floor(((fastestTime*scaleFactor) - fastestTime - buffer) / 60) * 60,
+    Math.ceil(((slowestTime*scaleFactor) - slowestTime + buffer) / 60) * 60
+  ]
+
+  // const ticks = timeTicks.map(t => (slowestTime * scaleFactor) - t)
+
+  // console.log({
+  //   fastestTime,
+  //   slowestTime,
+  //   f: formatTime(fastestTime),
+  //   s: formatTime(slowestTime)
+  // })
+
+  const slowestPlottable = timeToPlottableTime(slowestTime)
+  const fastestPlottable = timeToPlottableTime(fastestTime)
+
+  const domain = [
+    roundToNearest(slowestPlottable, 60, "down", 10),
+    roundToNearest(fastestPlottable, 60, "up", 10),
+  ]
+
+  // console.log(domain)
 
   const formatYAxis = (value: number) => {
-    return formatTime(plottableTimeToTime(value))
+    const time = plottableTimeToTime(value)
+    return `${formatTime(time)}`
   };
 
   return (
@@ -70,7 +109,15 @@ export function LineLinearGradientChart({ title, description, chartData }: LineL
             }}
           >
             <CartesianGrid vertical={false} />
-            <YAxis tickFormatter={formatYAxis} />
+            <YAxis
+              type="number"
+              domain={domain}
+              tickCount={10}
+              // interval={"preserveStartEnd"}
+              // ticks={ticks}
+              tickMargin={8}
+              tickFormatter={formatYAxis}
+              />
             <XAxis
               dataKey="year"
               tickLine={false}
@@ -101,7 +148,7 @@ export function LineLinearGradientChart({ title, description, chartData }: LineL
             </defs>
             <Area
               dataKey="plottableTime"
-              type="natural"
+              type="bumpX"
               fill="url(#fillRunning)"
               fillOpacity={0.4}
               stroke="var(--color-pbs)"

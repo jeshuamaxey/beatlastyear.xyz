@@ -9,41 +9,10 @@ import {
   TableCell,
   TableHead,
 } from './ui/table';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
 import { createClient } from '@/utils/supabase/client';
 import { StravaActivitySummary } from '@/app/api/strava/types';
-import { Database } from '@/utils/supabase/database.types';
 import { useState } from 'react';
-import { ScrollArea } from '@radix-ui/react-scroll-area';
 import Link from 'next/link';
-
-// type JsonDataDialogProps = {
-//   open: boolean
-//   allData: Database["public"]["Tables"]["strava_activities"]["Row"]
-// }
-
-// const JsonDataDialog = ({allData, open}: JsonDataDialogProps) => {
-//   return <Dialog open={open}>
-//     <DialogTrigger>view JSON</DialogTrigger>
-//     <DialogContent>
-//       <DialogHeader>
-//         <DialogTitle>The kitchen sink</DialogTitle>
-//         <DialogDescription className="overflow-hidden">
-//           <ScrollArea className="h-96">
-//             <pre>{JSON.stringify(allData, null, 2)}</pre>
-//           </ScrollArea>
-//         </DialogDescription>
-//       </DialogHeader>
-//     </DialogContent>
-//   </Dialog>
-// }
 
 const StravaActivitiesTable = () => {
   const [openRowId, setOpenRowId] = useState<number | null>(null)

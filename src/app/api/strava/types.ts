@@ -106,3 +106,42 @@ export type StravaActivitySummary = {
   total_photo_count: number;
   has_kudoed: boolean;
 }
+
+export type StravaAthleteProfile = {
+  id: number;
+  resource_state: number;
+  username: string;
+  firstname: string;
+  lastname: string;
+  bio: string;
+  profile_medium: string;
+  profile: string;
+  city: string;
+  state: string;
+  country: string;
+  sex: string;
+  premium: boolean;
+  summit: boolean;
+  created_at: string;
+  updated_at: string;
+  follower_count: number;
+  friend_count: number;
+  mutual_friend_count: number;
+  athlete_type: number;
+  date_preference: string;
+  measurement_preference: 'feet' | 'meters';
+  weight: number;
+  clubs: {
+    id: number;
+    name: string;
+    profile: string;
+    cover_photo: string;
+    cover_photo_small: string;
+    sport_type: string;
+    member_count: number;
+    private: boolean;
+    membership: string;
+    admin: boolean;
+    owner: boolean;
+  }[];
+}

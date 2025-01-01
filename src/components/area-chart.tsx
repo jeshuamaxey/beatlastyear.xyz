@@ -4,8 +4,6 @@ import React from 'react';
 
 import { LineLinearGradientChart } from "./charts/line-linear-gradient";
 import { Card } from "./ui/card";
-// import useTimesQuery from "@/hooks/useTimesQuery";
-// import useMyProfileQuery from '@/hooks/useMyProfileQuery';
 import { Database } from '@/utils/supabase/database.types';
 
 type AreaChartProps = {
@@ -14,16 +12,18 @@ type AreaChartProps = {
 }
 
 const AreaChart = ({ times, profile }: AreaChartProps) => {
+  const distance = times[0].distance
   const yearMin = times[0].year
   const yearMax = times[times.length-1].year
 
   const name = profile.name ? `${profile.name}'s` : "Your"
-  const description = `${name} 5k PBs from ${yearMin} to ${yearMax}`
+  const title = `Best ${distance} times`
+  const description = `${name} ${distance} PBs from ${yearMin} to ${yearMax}`
 
   return <div>
     <Card className="w-full max-w-2xl">
       <LineLinearGradientChart
-        title="Best 5k times"
+        title={title}
         description={description}
         chartData={times}
         />

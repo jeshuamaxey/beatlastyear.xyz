@@ -1,44 +1,14 @@
-import AreaChart from "@/components/area-chart";
-import BarChart from "@/components/bar-chart";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { createClient } from "@/utils/supabase/server";
-import { TabsContent } from "@radix-ui/react-tabs";
-import { notFound } from "next/navigation";
+import PersonalBestChartGrid from "@/components/personal-best-chart-grid";
+import ProfileHeader from "@/components/profile-header";
+
+console.warn("Add pre-fetching of profile data here")
 
 export default async function ProtectedPage({params}: {params: Promise<{slug: string}>}) {
-  const supabase = await createClient();
   const { slug } = await params
-
-  const {data: profile, error: profileError} = await supabase.from('profiles').select('*').eq('slug', slug).single()
-
-  if(profileError) {
-    console.log({
-      profileError,
-      slug
-    })
-    return notFound()
-  }
-
-  const {data: times, error: timesError} = await supabase.from('times').select('*').eq('profile_id', profile.id)
-
-  if(timesError || times.length === 0) {
-    return <p className="text-center text-lg">This profile has no times yet</p>
-  }
-
   return (
-    <div className="w-full px-4 flex flex-col gap-4">
-      <Tabs defaultValue="areachart" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-4">
-          <TabsTrigger value="areachart">Line chart</TabsTrigger>
-          <TabsTrigger value="barchart">Bar chart</TabsTrigger>
-        </TabsList>
-        <TabsContent value="areachart">
-          <AreaChart times={times} profile={profile} />
-        </TabsContent>
-        <TabsContent value="barchart">
-          <BarChart times={times} profile={profile}/>
-        </TabsContent>
-      </Tabs>
-    </div>
+    <>
+      <ProfileHeader slug={slug}/>
+      <PersonalBestChartGrid slug={slug} />
+    </>
   );
 }

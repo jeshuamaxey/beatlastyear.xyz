@@ -18,6 +18,17 @@ const nextConfig = {
   },
   // This is required to support PostHog trailing slash API requests
   skipTrailingSlashRedirect: true,
+
+  //
+  images: {
+    remotePatterns: [
+      // strava profile pics
+      {
+        protocol: 'https',
+        hostname: '*.cloudfront.net'
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;
