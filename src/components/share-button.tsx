@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-const ShareButton = ({ slug }: { slug: string }) => {
+const ShareButton = ({ slug, url, text }: { slug: string, url: string, text: string }) => {
   const [blobImageAsset, setBlobImageAsset] = useState<Blob | null>(null)
-  const url = "/ig-story.png"
 
   useEffect(() => {
     const fetchBlobImageAsset = async () => {
@@ -38,7 +37,7 @@ const ShareButton = ({ slug }: { slug: string }) => {
     return false
   };
 
-  return <button onClick={shareImageAsset}>Share</button>
+  return <button onClick={shareImageAsset}>{text}</button>
 }
 
 export default ShareButton

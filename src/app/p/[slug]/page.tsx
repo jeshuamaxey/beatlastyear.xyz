@@ -10,7 +10,8 @@ export default async function ProtectedPage({params}: {params: Promise<{slug: st
     <div className="flex flex-col gap-4">
       <ProfileHeader slug={slug}/>
       <PersonalBestChartGrid slug={slug} />
-      <ShareButton slug={slug} />
+      <ShareButton slug={slug} url={"/ig-story.png"} text="Share png" />
+      <ShareButton slug={slug} url={"/ig-story.svg"} text="Share svg" />
     </div>
   );
 }
