@@ -17,18 +17,18 @@ export type Database = MergeDeep<
             activity_summary_json: StravaActivitySummary
           },
           Update: {
-            activity_summary_json: StravaActivitySummary
+            activity_summary_json?: StravaActivitySummary
           }
         },
         strava_profiles: {
           Row: {
-            athlete_profile: StravaAthleteProfile
+            athlete_profile?: StravaAthleteProfile
           },
           Insert: {
-            athlete_profile: StravaAthleteProfile
+            athlete_profile?: StravaAthleteProfile
           },
           Update: {
-            athlete_profile: StravaAthleteProfile
+            athlete_profile?: StravaAthleteProfile
           }
         }
       }

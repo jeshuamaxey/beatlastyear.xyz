@@ -24,12 +24,16 @@ const PersonalBestChartGrid = ({ slug }: PersonalBestChartGridProps) => {
   const times10km = profile.times.filter(time => time.distance === '10km')
   
   return <div className="w-full px-4 flex gap-4">
-    <div className="w-1/2">
-      <AreaChart times={times5km} profile={profile} />
-    </div>
-    <div className="w-1/2">
-      <AreaChart times={times10km} profile={profile} />
-    </div>
+    {times5km.length > 0 && (
+      <div className="w-1/2">
+        <AreaChart times={times5km} profile={profile} />
+      </div>
+    )}
+    {times10km.length > 0 && (
+      <div className="w-1/2">
+        <AreaChart times={times10km} profile={profile} />
+      </div>
+    )}
   </div>
 } 
 

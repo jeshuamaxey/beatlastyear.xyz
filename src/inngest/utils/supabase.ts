@@ -1,4 +1,4 @@
-import { Database } from '@/utils/supabase/autogen.types'
+import { Database } from '@/utils/supabase/database.types'
 import { createClient } from '@supabase/supabase-js'
 
 export const createAdminClient = async () => {

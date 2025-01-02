@@ -7,6 +7,7 @@ const protectedRoutes = [
   "/post/sign-in",
   "/times",
   "/p/",
+  "/admin",
 ]
 
 export const updateSession = async (request: NextRequest) => {
