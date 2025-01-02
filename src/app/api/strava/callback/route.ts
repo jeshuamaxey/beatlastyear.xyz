@@ -3,7 +3,7 @@ import { createClient } from '@/utils/supabase/server';
 import { inngest } from "@/inngest/client";
 import { redirect } from 'next/navigation';
 import { NextResponse } from "next/server";
-import { StravaAuthTokenResponseSuccess } from '../types';
+import { StravaAthleteProfile, StravaAuthTokenResponseSuccess } from '../types';
 import PostHogServerClient from '@/lib/posthog';
 
 export async function GET(req: Request) {
@@ -51,7 +51,7 @@ export async function GET(req: Request) {
     const { data, error } = await supabase.from('strava_profiles').upsert({
       profile_id: user!.id,
       refresh_token: stravaRes.refresh_token,
-      athlete_profile: stravaRes.athlete,
+      athlete_profile: stravaRes.athlete as StravaAthleteProfile,
       sync_status: "SYNCING"
     })
 
