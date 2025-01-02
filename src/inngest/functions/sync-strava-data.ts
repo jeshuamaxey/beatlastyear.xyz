@@ -19,7 +19,7 @@ export const syncStravaData = inngest.createFunction(
     const supabase = await createAdminClient()
 
     const accessToken = await step.run("get-strava-access-token", async () => {
-      const { data, error } = await supabase.from('strava_profiles')
+      const { data, error } = await supabase.from('strava_refresh_tokens')
         .select('refresh_token')
         .eq('profile_id', userId)
         .single()

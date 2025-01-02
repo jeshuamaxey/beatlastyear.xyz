@@ -48,9 +48,8 @@ export async function GET(req: Request) {
       throw new Error(userError.message)
     }
 
-    const { data, error } = await supabase.from('strava_profiles').upsert({
+    const { error } = await supabase.from('strava_profiles').upsert({
       profile_id: user!.id,
-      refresh_token: stravaRes.refresh_token,
       athlete_profile: stravaRes.athlete as StravaAthleteProfile,
       sync_status: "SYNCING"
     })
@@ -58,6 +57,16 @@ export async function GET(req: Request) {
     if(error) {
       console.error(error)
       throw new Error(error.message)
+    }
+
+    const { data: refreshTokenData, error: refreshTokenError } = await supabase.from('strava_refresh_tokens').upsert({
+      profile_id: user!.id,
+      refresh_token: stravaRes.refresh_token,
+    })
+
+    if(refreshTokenError) {
+      console.error(refreshTokenError)
+      throw new Error(refreshTokenError.message)
     }
 
     await inngest.send({
