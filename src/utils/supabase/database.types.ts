@@ -35,3 +35,6 @@ export type Database = MergeDeep<
     }
   }
 >
+
+export type TimeInsert = Database["public"]["Tables"]["times"]["Insert"]
+export type ActivitiesInsert = Database["public"]["Tables"]["strava_activities"]["Insert"]

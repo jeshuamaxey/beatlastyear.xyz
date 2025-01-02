@@ -1,11 +1,9 @@
-import { Database } from "@/utils/supabase/database.types";
+import { ActivitiesInsert } from "@/utils/supabase/database.types";
 import { inngest } from "../client";
 import { StravaAPI } from "@/lib/strava";
 import { createAdminClient } from "../utils/supabase";
 
 const functionId = "sync-strava-data"
-
-type TimeInsert = Database["public"]["Tables"]["times"]["Insert"]
 
 export const syncStravaData = inngest.createFunction(
   { id:  functionId },
@@ -62,7 +60,7 @@ export const syncStravaData = inngest.createFunction(
     }
 
     await step.run("store-strava-activities-in-supabase", async () => {
-      const activitiesToInsert : Database["public"]["Tables"]["strava_activities"]["Insert"][] = allActivities.map((act) => ({
+      const activitiesToInsert : ActivitiesInsert[] = allActivities.map((act) => ({
         profile_id: userId,
         id: act.id,
         activity_summary_json: act
@@ -88,40 +86,12 @@ export const syncStravaData = inngest.createFunction(
 
       console.log(`Found ${data.length} activites for user ${userId}`)
 
-      const activities = data.map(a => a.activity_summary_json)
+      const activitySummaries = data.map(a => a.activity_summary_json)
 
-      const fastest5Ks = StravaAPI.analyzeFastest5KPerYear(activities)
-      const fastest10Ks = StravaAPI.analyzeFastest10KPerYear(activities)
-
-      const times5K: TimeInsert[] = fastest5Ks.map((run) => ({
-        profile_id: userId,
-        year: run.year,
-        time: run.time,
-        distance: "5km",
-        sport: "running",
-        date: run.date,
-        strava_activity_id: run.activity_id,
-        data_source: "strava"
-      }))
-
-      const times10K: TimeInsert[] = fastest10Ks.map((run) => ({
-        profile_id: userId,
-        year: run.year,
-        time: run.time,
-        distance: "10km",
-        sport: "running",
-        date: run.date,
-        strava_activity_id: run.activity_id,
-        data_source: "strava"
-      }))
-
-      const timesToInsert = [
-        ...times5K,
-        ...times10K
-      ]
+      const times = StravaAPI.getTimesFromActivitySummaries(activitySummaries, userId)
   
       const { error } = await supabase.from("times").upsert(
-        timesToInsert,
+        times,
         {
           onConflict: "profile_id, year, distance, sport",
           ignoreDuplicates: false
@@ -131,8 +101,7 @@ export const syncStravaData = inngest.createFunction(
       if (error) throw error;
 
       return {
-        fastest5Ks: fastest5Ks.length,
-        fastest10Ks: fastest10Ks.length,
+        times: times.length,
        };
     })
 

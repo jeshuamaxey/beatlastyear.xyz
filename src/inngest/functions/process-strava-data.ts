@@ -1,11 +1,8 @@
-import { Database } from "@/utils/supabase/database.types";
 import { inngest } from "../client";
 import { StravaAPI } from "@/lib/strava";
 import { createAdminClient } from "../utils/supabase";
 
 const functionId = "process-strava-data"
-
-type TimeInsert = Database["public"]["Tables"]["times"]["Insert"]
 
 export const processStravaData = inngest.createFunction(
   { id:  functionId },
@@ -39,42 +36,12 @@ export const processStravaData = inngest.createFunction(
 
       console.log(`Found ${data.length} activites for user ${userId}`)
 
-      const activities = data.map(a => a.activity_summary_json)
+      const activitySummaries = data.map(a => a.activity_summary_json)
 
-      const fastest5Ks = StravaAPI.analyzeFastest5KPerYear(activities)
-      const fastest10Ks = StravaAPI.analyzeFastest10KPerYear(activities)
-
-      const times5K: TimeInsert[] = fastest5Ks.map((run) => ({
-        profile_id: userId,
-        year: run.year,
-        time: run.time,
-        distance: "5km",
-        sport: "running",
-        date: run.date,
-        strava_activity_id: run.activity_id,
-        data_source: "strava"
-      }))
-
-      const times10K: TimeInsert[] = fastest10Ks.map((run) => ({
-        profile_id: userId,
-        year: run.year,
-        time: run.time,
-        distance: "10km",
-        sport: "running",
-        date: run.date,
-        strava_activity_id: run.activity_id,
-        data_source: "strava"
-      }))
-
-      const timesToInsert = [
-        ...times5K,
-        ...times10K
-      ]
-
-      console.log(timesToInsert)
+      const times = StravaAPI.getTimesFromActivitySummaries(activitySummaries, userId)
   
       const { error } = await supabase.from("times").upsert(
-        timesToInsert,
+        times,
         {
           onConflict: "profile_id, year, distance, sport",
           ignoreDuplicates: false
@@ -84,8 +51,7 @@ export const processStravaData = inngest.createFunction(
       if (error) throw error;
 
       return {
-        fastest5Ks: fastest5Ks.length,
-        fastest10Ks: fastest10Ks.length,
+        times: times.length,
        };
     })
 

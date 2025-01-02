@@ -1,4 +1,5 @@
-import { StravaAuthTokenResponseError, StravaAuthTokenResponseSuccess } from "@/app/api/strava/types";
+import { StravaActivitySummary, StravaAuthTokenResponseError, StravaAuthTokenResponseSuccess } from "@/app/api/strava/types";
+import { TimeInsert } from "@/utils/supabase/database.types";
 
 // lib/strava.ts
 export class StravaAPI {
@@ -193,5 +194,39 @@ export class StravaAPI {
     });
 
     return Array.from(yearlyBests.values()).sort((a, b) => b.year - a.year);
+  }
+
+  static getTimesFromActivitySummaries(activities: StravaActivitySummary[], userId: string): TimeInsert[] {
+    const fastest5Ks = this.analyzeFastest5KPerYear(activities)
+    const fastest10Ks = this.analyzeFastest10KPerYear(activities)
+
+    const times5K: TimeInsert[] = fastest5Ks.map((run) => ({
+      profile_id: userId,
+      year: run.year,
+      time: run.time,
+      distance: "5km",
+      sport: "running",
+      date: run.date,
+      strava_activity_id: run.activity_id,
+      data_source: "strava"
+    }))
+
+    const times10K: TimeInsert[] = fastest10Ks.map((run) => ({
+      profile_id: userId,
+      year: run.year,
+      time: run.time,
+      distance: "10km",
+      sport: "running",
+      date: run.date,
+      strava_activity_id: run.activity_id,
+      data_source: "strava"
+    }))
+
+    const times = [
+      ...times5K,
+      ...times10K
+    ]
+
+    return times
   }
 }
