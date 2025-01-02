@@ -131,6 +131,7 @@ const SyncWithStravaButton = ({className, onSyncStart, onSyncSuccess, onDisconne
   </DropdownMenuItem>
 
   const connectBtn = <Image
+    priority
     src="/strava-button.svg"
     alt="Connect with Strava"
     width={193}
