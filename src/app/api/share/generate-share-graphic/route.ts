@@ -31,13 +31,13 @@ export async function GET(req: Request) {
 
   const [time1, time2, time3] = data
 
-  const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
+  const defaultUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
   : "http://localhost:3000";
 
   const templateUrl = `${defaultUrl}/ig-story-simple-template.svg`
 
-  console.log("process.env.VERCEL_URL :: ", process.env.VERCEL_URL)
+  console.log("process.env.VERCEL_PROJECT_PRODUCTION_URL :: ", process.env.VERCEL_PROJECT_PRODUCTION_URL)
   console.log("defaultUrl :: ", defaultUrl)
   console.log("templateUrl :: ", templateUrl)
 
