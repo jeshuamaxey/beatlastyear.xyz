@@ -3,14 +3,14 @@
 import { useEffect, useState } from "react";
 
 const ShareButton = ({ slug, onSuccess }: { slug: string, onSuccess?: ({svgUrl, svgString}: {svgUrl: string, svgString: string}) => void }) => {
-  const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
+  // const defaultUrl = process.env.VERCEL_URL
+  // ? `https://${process.env.VERCEL_URL}`
+  // : "http://localhost:3000";
 
   const [blobImageAsset, setBlobImageAsset] = useState<Blob | null>(null)
 
   const generateShareGraphic = async () => {
-    const shareGraphicResponse = await fetch(`${defaultUrl}/api/share/generate-share-graphic`)
+    const shareGraphicResponse = await fetch(`/api/share/generate-share-graphic`)
     // const { message, svgUrl, pngUrl } 
     const json = await shareGraphicResponse.json()
     
