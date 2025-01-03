@@ -3,6 +3,7 @@ import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { NextResponse } from "next/server";
 import PostHogServerClient from '@/lib/posthog';
+import { formatTime } from '@/lib/utils';
 // import sharp from 'sharp'
 // import { convert } from 'convert-svg-to-png'
 // import svg2img from 'svg2img'
@@ -55,11 +56,11 @@ export async function GET(req: Request) {
 
   const svgString = svgTemplate
     .replace('{{FIRST_DATE}}', time1.date || time1.year.toString())
-    .replace('{{FIRST_TIME}}', time1.time.toString())
+    .replace('{{FIRST_TIME}}', formatTime(time1.time))
     .replace('{{SECOND_DATE}}', time2.date || time2.year.toString())
-    .replace('{{SECOND_TIME}}', time2.time.toString())
+    .replace('{{SECOND_TIME}}', formatTime(time2.time))
     .replace('{{THIRD_DATE}}', time3.date || time3.year.toString())
-    .replace('{{THIRD_TIME}}', time3.time.toString())
+    .replace('{{THIRD_TIME}}', formatTime(time3.time))
 
   const date = new Date().toISOString()
 
