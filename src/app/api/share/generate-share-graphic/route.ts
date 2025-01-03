@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import PostHogServerClient from '@/lib/posthog';
 // import sharp from 'sharp'
 // import { convert } from 'convert-svg-to-png'
-import svg2img from 'svg2img'
+// import svg2img from 'svg2img'
 
 export async function GET(req: Request) {
   const posthog = PostHogServerClient()
