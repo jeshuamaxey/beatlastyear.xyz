@@ -37,8 +37,18 @@ export async function GET(req: Request) {
 
   const templateUrl = `${defaultUrl}/ig-story-simple-template.svg`
 
+  console.log("process.env.VERCEL_URL :: ", process.env.VERCEL_URL)
+  console.log("defaultUrl :: ", defaultUrl)
+  console.log("templateUrl :: ", templateUrl)
+
   // load file from url
   const response = await fetch(templateUrl)
+
+  if(!response.ok) {
+    console.error("Error fetching template", response)
+    return NextResponse.json({ error: "Error fetching template" }, { status: 500 })
+  }
+
   const svgTemplate = await response.text()
 
   console.log(svgTemplate)
