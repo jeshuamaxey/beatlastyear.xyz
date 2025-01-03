@@ -2,17 +2,26 @@
 
 import { useEffect, useState } from "react";
 
-const ShareButton = ({ slug, url, text }: { slug: string, url: string, text: string }) => {
+const ShareButton = ({ slug, onSuccess }: { slug: string, onSuccess?: ({svgUrl, svgString}: {svgUrl: string, svgString: string}) => void }) => {
+  const defaultUrl = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : "http://localhost:3000";
+
   const [blobImageAsset, setBlobImageAsset] = useState<Blob | null>(null)
 
-  useEffect(() => {
-    const fetchBlobImageAsset = async () => {
-      const response = await fetch(url.toString());
-      const blob = await response.blob();
-      setBlobImageAsset(blob)
-    }
-    fetchBlobImageAsset()
-  }, [])
+  const generateShareGraphic = async () => {
+    const shareGraphicResponse = await fetch(`${defaultUrl}/api/share/generate-share-graphic`)
+    // const { message, svgUrl, pngUrl } 
+    const json = await shareGraphicResponse.json()
+    
+    // console.log(message, svgUrl, pngUrl)
+    console.log(json)
+
+    // const response = await fetch(svgUrl.toString());
+    // const blob = await response.blob();
+    // setBlobImageAsset(blob)
+    onSuccess?.(json)
+  }
 
   const shareImageAsset = async (): Promise<boolean> => {
     if(!blobImageAsset) {
@@ -37,7 +46,9 @@ const ShareButton = ({ slug, url, text }: { slug: string, url: string, text: str
     return false
   };
 
-  return <button onClick={shareImageAsset}>{text}</button>
+  const text = blobImageAsset ? "Share" : "Generate graphic"
+
+  return <button onClick={blobImageAsset ? shareImageAsset : generateShareGraphic}>{text}</button>
 }
 
 export default ShareButton
