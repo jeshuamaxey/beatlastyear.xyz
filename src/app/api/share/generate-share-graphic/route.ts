@@ -4,11 +4,34 @@ import { redirect } from 'next/navigation';
 import { NextResponse } from "next/server";
 import PostHogServerClient from '@/lib/posthog';
 import { formatTime } from '@/lib/utils';
+import canvas from 'canvas'
+import { DOMParser } from '@xmldom/xmldom'
+import { Canvg, presets } from 'canvg';
 // import sharp from 'sharp'
 // import { convert } from 'convert-svg-to-png'
 // import svg2img from 'svg2img'
 
-export async function GET(req: Request) {
+const WIDTH = 1080
+const HEIGHT = 1920
+
+const preset = presets.node({
+  DOMParser,
+  canvas,
+  fetch
+});
+
+export type GenerateShareGraphicPayload = {
+  message: string
+  svgUrl: string
+  pngUrl: string
+  svgString: string
+}
+
+export type ErrorPayload = {
+  error: string
+}
+
+export async function GET(req: Request): Promise<NextResponse<GenerateShareGraphicPayload> | NextResponse<ErrorPayload>> {
   const posthog = PostHogServerClient()
 
   const supabase = await createClient()
@@ -75,7 +98,17 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Error uploading share graphic" }, { status: 500 })
   }
 
+  // Canvg
   const svgPublicUrl = supabase.storage.from('share_graphics').getPublicUrl(svgUploadData.path)
+
+  const canvas = preset.createCanvas(WIDTH, HEIGHT)
+  const ctx = canvas.getContext('2d')
+  const v = Canvg.fromString(ctx, svgString, preset)
+
+  // Render only first frame, ignoring animations.
+  await v.render()
+
+  const pngBuffer = canvas.toBuffer()
 
   // sharp conversion from svg to png
   // works, but embedded fonts are not supported by sharp
@@ -103,21 +136,21 @@ export async function GET(req: Request) {
   //   return NextResponse.json({ error: "Error converting svg to png" }, { status: 500 })
   // }
 
-  // const {data: pngUploadData, error: pngUploadError} = await supabase.storage.from('share_graphics')
-  //   .upload(`${user.id}-${date}.png`, pngBuffer, {
-  //     contentType: 'image/png',
-  //   })
+  const {data: pngUploadData, error: pngUploadError} = await supabase.storage.from('share_graphics')
+    .upload(`${user.id}-${date}.png`, pngBuffer, {
+      contentType: 'image/png',
+    })
 
-  // if(pngUploadError) {
-  //   console.error(pngUploadError)
-  //   return NextResponse.json({ error: "Error uploading share graphic" }, { status: 500 })
-  // }
+  if(pngUploadError) {
+    console.error(pngUploadError)
+    return NextResponse.json({ error: "Error uploading share graphic" }, { status: 500 })
+  }
 
-  // const pngPublicUrl = supabase.storage.from('share_graphics').getPublicUrl(pngUploadData.path)
+  const pngPublicUrl = supabase.storage.from('share_graphics').getPublicUrl(pngUploadData.path)
 
   return NextResponse.json({
     message: "Share graphic generated",
-    // pngUrl: pngPublicUrl.data.publicUrl
+    pngUrl: pngPublicUrl.data.publicUrl,
     svgUrl: svgPublicUrl.data.publicUrl,
     svgString
   }, { status: 200 })
