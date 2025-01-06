@@ -11,7 +11,9 @@ export default async function ProtectedPage({params}: {params: Promise<{slug: st
     <div className="flex flex-col gap-4">
       <ProfileHeader slug={slug}/>
       <PersonalBestChartGrid slug={slug} />
-      <Share slug={slug} />
+      <div className="flex flex-col gap-2 px-4">
+        <Share slug={slug} />
+      </div>
     </div>
   );
 }
