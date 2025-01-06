@@ -7,6 +7,8 @@ import { formatTime } from '@/lib/utils';
 import canvas from 'canvas'
 import { DOMParser } from '@xmldom/xmldom'
 import { Canvg, presets } from 'canvg';
+import chromium from '@sparticuz/chromium';
+import puppeteer from 'puppeteer-core';
 // import sharp from 'sharp'
 // import { convert } from 'convert-svg-to-png'
 // import svg2img from 'svg2img'
@@ -45,16 +47,6 @@ const getHtml = (svgString: string) => {
     </head>
     <body>${svgString}</body>
     </html>`
-}
-
-let puppeteer: any
-let chrome: any
-
-if(process.env.AWS_LAMBDA_FUNCTION_NAME) {
-  chrome = require('chrome-aws-lambda')
-  puppeteer = require('puppeteer-core')
-} else {
-  puppeteer = require('puppeteer')
 }
 
 export async function GET(req: Request): Promise<NextResponse<GenerateShareGraphicPayload> | NextResponse<ErrorPayload>> {
@@ -144,17 +136,16 @@ export async function GET(req: Request): Promise<NextResponse<GenerateShareGraph
   // const pngBuffer = canvas.toBuffer()
 
   // Puppeteer
-  let browser: any
-  if(process.env.AWS_LAMBDA_FUNCTION_NAME) {
-    browser = await puppeteer.launch({
-      args: chrome.args,
-      defaultViewport: chrome.defaultViewport,
-      executablePath: await chrome.executablePath,
-      headless: true
-    });
-  } else {
-    browser = await puppeteer.launch();
-  }
+  chromium.setHeadlessMode = true;
+  // disable webgl
+  chromium.setGraphicsMode = false;
+
+  const browser = await puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath(),
+    headless: true
+  });
 
   const page = await browser.newPage();
   const contentHtml = getHtml(svgString)
