@@ -1,3 +1,6 @@
+import puppeteer from 'puppeteer';
+import fs from "fs";
+
 // api/share/generate-share-graphic
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
@@ -29,6 +32,22 @@ export type GenerateShareGraphicPayload = {
 
 export type ErrorPayload = {
   error: string
+}
+
+const getHtml = (svgString: string) => {
+  return `
+    <!DOCTYPE html>
+    <html>
+
+    <head>
+      <style>
+        body {
+          margin: 0;
+        }
+      </style>
+    </head>
+    <body>${svgString}</body>
+    </html>`
 }
 
 export async function GET(req: Request): Promise<NextResponse<GenerateShareGraphicPayload> | NextResponse<ErrorPayload>> {
@@ -98,17 +117,36 @@ export async function GET(req: Request): Promise<NextResponse<GenerateShareGraph
     return NextResponse.json({ error: "Error uploading share graphic" }, { status: 500 })
   }
 
-  // Canvg
   const svgPublicUrl = supabase.storage.from('share_graphics').getPublicUrl(svgUploadData.path)
 
-  const canvas = preset.createCanvas(WIDTH, HEIGHT)
-  const ctx = canvas.getContext('2d')
-  const v = Canvg.fromString(ctx, svgString, preset)
+  // Canvg
 
-  // Render only first frame, ignoring animations.
-  await v.render()
+  // const canvas = preset.createCanvas(WIDTH, HEIGHT)
+  // const ctx = canvas.getContext('2d')
+  // const v = Canvg.fromString(ctx, svgString, {
+  //   ...preset,
+  //   enableRedraw: true,
+  // })
 
-  const pngBuffer = canvas.toBuffer()
+  // // Render only first frame, ignoring animations.
+  // await v.render({
+  //   ...preset,
+  //   enableRedraw: true,
+  // })
+
+  // const pngBuffer = canvas.toBuffer()
+
+  // Puppeteer
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  const contentHtml = getHtml(svgString)
+  await page.setContent(contentHtml);
+  await page.setViewport({
+    width: WIDTH,
+    height: HEIGHT
+  })
+  const pngBuffer = await page.screenshot({ type: 'png' });
+  await browser.close();
 
   // sharp conversion from svg to png
   // works, but embedded fonts are not supported by sharp

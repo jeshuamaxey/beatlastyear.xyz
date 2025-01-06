@@ -141,13 +141,19 @@ const Share = ({slug}: {slug: string}) => {
 
     {/* <canvas className="max-w-full h-auto border border-red-500" width={1080} height={1920} ref={canvasRef}></canvas> */}
 
-
     {svg && (
+      <img src={svg.pngUrl}
+        className="max-w-full h-auto"
+        alt="Share Graphic"
+      />
+    )}
+
+    {/* {svg && (
       <div className="max-w-64 border border-green-600"
         ref={svgContainerRef}
         dangerouslySetInnerHTML={{ __html: svg.svgString }}
       />
-    )}
+    )} */}
 
   </div>
 }
