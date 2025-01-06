@@ -1,3 +1,5 @@
+export const maxDuration = 60;
+
 // api/share/generate-share-graphic
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
