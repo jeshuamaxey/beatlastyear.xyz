@@ -30,7 +30,6 @@
     "canvas": "^3.0.1",
     "canvas-renderer": "^2.2.1",
     "canvg": "^4.0.2",
-    "chrome-aws-lambda": "^10.1.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
