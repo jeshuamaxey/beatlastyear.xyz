@@ -1,34 +1,20 @@
+// api/share/generate-share-graphic
+
+// setting inspired by https://github.com/stephankaag/chromium-on-vercel
 export const maxDuration = 60;
 
-// api/share/generate-share-graphic
 import { createClient } from '@/utils/supabase/server';
-import { redirect } from 'next/navigation';
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import PostHogServerClient from '@/lib/posthog';
 import { formatTime } from '@/lib/utils';
-import canvas from 'canvas'
-import { DOMParser } from '@xmldom/xmldom'
-import { Canvg, presets } from 'canvg';
 import chromium from '@sparticuz/chromium';
-import puppeteer from 'puppeteer-core';
-// import sharp from 'sharp'
-// import { convert } from 'convert-svg-to-png'
-// import svg2img from 'svg2img'
 
 const WIDTH = 1080
 const HEIGHT = 1920
 
-const preset = presets.node({
-  DOMParser,
-  canvas,
-  fetch
-});
-
 export type GenerateShareGraphicPayload = {
   message: string
-  svgUrl: string
-  pngUrl: string
-  svgString: string
+  imgUrl: string
 }
 
 export type ErrorPayload = {
@@ -51,8 +37,28 @@ const getHtml = (svgString: string) => {
     </html>`
 }
 
-export async function GET(req: Request): Promise<NextResponse<GenerateShareGraphicPayload> | NextResponse<ErrorPayload>> {
+export async function GET(req: NextRequest): Promise<NextResponse<GenerateShareGraphicPayload> | NextResponse<ErrorPayload>> {
+  let puppeteer: typeof import('puppeteer-core') | undefined
+  let puppeteerOptions: any
+
+  if(process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    puppeteer = require('puppeteer-core')
+    puppeteerOptions = {
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: true
+    }
+  } else {
+    puppeteer = require('puppeteer')
+    puppeteerOptions = {}
+  }
+
   const posthog = PostHogServerClient()
+  // const posthogProperties = {
+  //   endpoint: 'api/share/generate-share-graphic',
+  //   requestId: req.headers.get('x-vercel-trace-id')
+  // }
 
   const supabase = await createClient()
 
@@ -62,6 +68,8 @@ export async function GET(req: Request): Promise<NextResponse<GenerateShareGraph
     console.error(error)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
+
+  posthog.identify({ distinctId: user?.id })
 
   const { data, error: timesError } = await supabase.from('times')
     .select('*')
@@ -95,8 +103,6 @@ export async function GET(req: Request): Promise<NextResponse<GenerateShareGraph
 
   const svgTemplate = await response.text()
 
-  console.log(svgTemplate)
-
   const svgString = svgTemplate
     .replace('{{FIRST_DATE}}', time1.date || time1.year.toString())
     .replace('{{FIRST_TIME}}', formatTime(time1.time))
@@ -107,47 +113,12 @@ export async function GET(req: Request): Promise<NextResponse<GenerateShareGraph
 
   const date = new Date().toISOString()
 
-  // upload svgString to svg file
-  const {data: svgUploadData, error: svgUploadError} = await supabase.storage.from('share_graphics')
-    .upload(`${user.id}-${date}.svg`, svgString, {
-      contentType: 'image/svg',
-    })
-
-  if(svgUploadError) {
-    console.error(svgUploadError)
-    return NextResponse.json({ error: "Error uploading share graphic" }, { status: 500 })
-  }
-
-  const svgPublicUrl = supabase.storage.from('share_graphics').getPublicUrl(svgUploadData.path)
-
-  // Canvg
-
-  // const canvas = preset.createCanvas(WIDTH, HEIGHT)
-  // const ctx = canvas.getContext('2d')
-  // const v = Canvg.fromString(ctx, svgString, {
-  //   ...preset,
-  //   enableRedraw: true,
-  // })
-
-  // // Render only first frame, ignoring animations.
-  // await v.render({
-  //   ...preset,
-  //   enableRedraw: true,
-  // })
-
-  // const pngBuffer = canvas.toBuffer()
-
   // Puppeteer
   chromium.setHeadlessMode = true;
   // disable webgl
   chromium.setGraphicsMode = false;
 
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath(),
-    headless: true
-  });
+  const browser = await puppeteer!.launch(puppeteerOptions);
 
   const page = await browser.newPage();
   const contentHtml = getHtml(svgString)
@@ -158,32 +129,6 @@ export async function GET(req: Request): Promise<NextResponse<GenerateShareGraph
   })
   const pngBuffer = await page.screenshot({ type: 'png' });
   await browser.close();
-
-  // sharp conversion from svg to png
-  // works, but embedded fonts are not supported by sharp
-  // const svgBuffer = Buffer.from(svg)
-  // const pngBuffer = await sharp(svgBuffer)
-  //   .resize(1080, 1920)
-  //   .png()
-  //   .toBuffer()
-  
-  // convert svg to png
-  // total failure
-  // const pngBuffer = await convert(`<html><body>${svg}</body></html>`)
-
-  // svg2img
-  // let pngBuffer: Buffer | undefined
-  // let pngError: Error | undefined
-
-  // svg2img(svgString, (error, buffer) => {
-  //   pngError = error
-  //   pngBuffer = buffer
-  // })
-
-  // if(pngError || !pngBuffer) {
-  //   console.error(pngError)
-  //   return NextResponse.json({ error: "Error converting svg to png" }, { status: 500 })
-  // }
 
   const {data: pngUploadData, error: pngUploadError} = await supabase.storage.from('share_graphics')
     .upload(`${user.id}-${date}.png`, pngBuffer, {
@@ -199,8 +144,6 @@ export async function GET(req: Request): Promise<NextResponse<GenerateShareGraph
 
   return NextResponse.json({
     message: "Share graphic generated",
-    pngUrl: pngPublicUrl.data.publicUrl,
-    svgUrl: svgPublicUrl.data.publicUrl,
-    svgString
+    imgUrl: pngPublicUrl.data.publicUrl
   }, { status: 200 })
 }

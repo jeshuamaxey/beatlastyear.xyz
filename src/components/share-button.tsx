@@ -1,10 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import { GenerateShareGraphicPayload } from "@/app/api/share/generate-share-graphic/route";
 
-const ShareButton = ({ slug, onSuccess }: { slug: string, onSuccess?: ({svgUrl, svgString}: GenerateShareGraphicPayload) => void }) => {
+const ShareButton = ({ slug, onSuccess }: { slug: string, onSuccess?: (payload: GenerateShareGraphicPayload) => void }) => {
   const [loading, setLoading] = useState(false)
 
   const [blobImageAsset, setBlobImageAsset] = useState<Blob | null>(null)
@@ -12,22 +12,12 @@ const ShareButton = ({ slug, onSuccess }: { slug: string, onSuccess?: ({svgUrl, 
   const generateShareGraphic = async () => {
     setLoading(true)
     const shareGraphicResponse = await fetch(`/api/share/generate-share-graphic`)
-    // const { message, svgUrl, pngUrl } 
     const json = await shareGraphicResponse.json() as GenerateShareGraphicPayload
-    
-    // console.log(message, svgUrl, pngUrl)
-    console.log(json)
-
-    // create pngFileBlob from pngUrl
-    const pngResponse = await fetch(json.pngUrl)
+    const pngResponse = await fetch(json.imgUrl)
     const pngBlob = await pngResponse.blob()
 
-    console.log({pngResponse, pngBlob})
     setBlobImageAsset(pngBlob)
 
-    // const response = await fetch(svgUrl.toString());
-    // const blob = await response.blob();
-    // setBlobImageAsset(blob)
     onSuccess?.(json)
     setLoading(false)
   }
