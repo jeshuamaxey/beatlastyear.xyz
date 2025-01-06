@@ -1,6 +1,3 @@
-import puppeteer from 'puppeteer';
-import fs from "fs";
-
 // api/share/generate-share-graphic
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
@@ -48,6 +45,16 @@ const getHtml = (svgString: string) => {
     </head>
     <body>${svgString}</body>
     </html>`
+}
+
+let puppeteer: any
+let chrome: any
+
+if(process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  chrome = require('chrome-aws-lambda')
+  puppeteer = require('puppeteer-core')
+} else {
+  puppeteer = require('puppeteer')
 }
 
 export async function GET(req: Request): Promise<NextResponse<GenerateShareGraphicPayload> | NextResponse<ErrorPayload>> {
@@ -137,7 +144,18 @@ export async function GET(req: Request): Promise<NextResponse<GenerateShareGraph
   // const pngBuffer = canvas.toBuffer()
 
   // Puppeteer
-  const browser = await puppeteer.launch();
+  let browser: any
+  if(process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    browser = await puppeteer.launch({
+      args: chrome.args,
+      defaultViewport: chrome.defaultViewport,
+      executablePath: await chrome.executablePath,
+      headless: true
+    });
+  } else {
+    browser = await puppeteer.launch();
+  }
+
   const page = await browser.newPage();
   const contentHtml = getHtml(svgString)
   await page.setContent(contentHtml);
